@@ -92,6 +92,10 @@ resource "aws_iam_role_policy" "lambda_scrape_role" {
           "dynamodb:Query",
           "dynamodb:BatchWriteItem",
           "dynamodb:BatchGetItem",
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:DeleteObject",
+          "s3:ListBucket",
         ],
         "Resource" : "*"
       }
@@ -199,4 +203,39 @@ resource "aws_dynamodb_table" "basic-dynamodb-table" {
     Name        = "dynamodb-table-1"
     Environment = "production"
   }
+}
+
+# 画像アップロード用のS3バケットの作成
+resource "aws_s3_bucket" "b" {
+  bucket = "meal-image-bucket"
+  acl    = "public-read"
+
+  cors_rule {
+    allowed_methods = ["GET"]
+    allowed_origins = ["*"]
+    allowed_headers = ["*"]
+    max_age_seconds = 3600
+  }
+
+  tags = {
+    Name        = "My bucket"
+    Environment = "Dev"
+  }
+}
+
+resource "aws_s3_bucket_policy" "b" {
+  bucket = aws_s3_bucket.b.id
+
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Sid" : "IPAllow",
+        "Effect" : "Allow",
+        "Principal" : "*",
+        "Action" : "s3:GetObject",
+        "Resource" : "arn:aws:s3:::${aws_s3_bucket.b.bucket}/*"
+      }
+    ]
+  })
 }
