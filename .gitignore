@@ -1,7 +1,11 @@
+# 生成されちゃうやつ
 package/
 response.json
 lambda-scrape.zip
+
+# 環境によっては、これらのファイルが必要になる
 .DS_Store 
+.vscode
 
 # Created by https://www.toptal.com/developers/gitignore/api/terraform
 # Edit at https://www.toptal.com/developers/gitignore?templates=terraform
