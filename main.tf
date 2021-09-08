@@ -34,6 +34,7 @@ resource "aws_lambda_function" "lambda_scrape_function" {
 
   handler = "handler.lambda_handler"
   runtime = "python3.8"
+  timeout = "30"
 
   filename         = data.archive_file.lambda_scrape_function.output_path
   source_code_hash = data.archive_file.lambda_scrape_function.output_base64sha256
@@ -72,3 +73,130 @@ resource "aws_iam_role" "lambda_scrape_role" {
   })
 }
 
+# LambdaのIAMロールのPolicyの作成
+resource "aws_iam_role_policy" "lambda_scrape_role" {
+  name = "coreque_scrape"
+  role = aws_iam_role.lambda_scrape_role.id
+
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "dynamodb:PutItem",
+          "dynamodb:GetItem",
+          "dynamodb:UpdateItem",
+          "dynamodb:DeleteItem",
+          "dynamodb:Scan",
+          "dynamodb:Query",
+          "dynamodb:BatchWriteItem",
+          "dynamodb:BatchGetItem",
+        ],
+        "Resource" : "*"
+      }
+    ]
+  })
+}
+
+# dynamodbの作成
+resource "aws_dynamodb_table" "basic-dynamodb-table" {
+  name           = "Meal"
+  billing_mode   = "PROVISIONED"
+  read_capacity  = 20
+  write_capacity = 20
+  hash_key       = "Id"
+  range_key      = "Classification"
+
+  attribute {
+    name = "Id"
+    type = "S"
+  }
+
+  attribute {
+    name = "Classification"
+    type = "S"
+  }
+
+  attribute {
+    name = "Name"
+    type = "S"
+  }
+
+  attribute {
+    name = "Calorie"
+    type = "N"
+  }
+
+  attribute {
+    name = "Carbohydrate"
+    type = "N"
+  }
+
+  attribute {
+    name = "Fat"
+    type = "N"
+  }
+
+  attribute {
+    name = "Protein"
+    type = "N"
+  }
+
+  attribute {
+    name = "Sodium"
+    type = "N"
+  }
+
+  # ソートキーごとにLSIを設定
+  local_secondary_index {
+    name               = "CalorieIndex"
+    range_key          = "Calorie"
+    non_key_attributes = ["details"]
+    projection_type    = "INCLUDE"
+  }
+
+  local_secondary_index {
+    name               = "CarbohydrateIndex"
+    range_key          = "Carbohydrate"
+    non_key_attributes = ["details"]
+    projection_type    = "INCLUDE"
+  }
+
+  local_secondary_index {
+    name               = "FatIndex"
+    range_key          = "Fat"
+    non_key_attributes = ["details"]
+    projection_type    = "INCLUDE"
+  }
+
+  local_secondary_index {
+    name               = "ProteinIndex"
+    range_key          = "Protein"
+    non_key_attributes = ["details"]
+    projection_type    = "INCLUDE"
+  }
+
+  local_secondary_index {
+    name               = "SodiumIndex"
+    range_key          = "Sodium"
+    non_key_attributes = ["details"]
+    projection_type    = "INCLUDE"
+  }
+
+  # 分類でグルーピングするためのインデックス
+  global_secondary_index {
+    name               = "MealClassifyIndex"
+    hash_key           = "Classification"
+    range_key          = "Name"
+    write_capacity     = 10
+    read_capacity      = 10
+    projection_type    = "INCLUDE"
+    non_key_attributes = ["Id"]
+  }
+
+  tags = {
+    Name        = "dynamodb-table-1"
+    Environment = "production"
+  }
+}
