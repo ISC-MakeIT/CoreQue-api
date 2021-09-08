@@ -22,3 +22,30 @@ git checkout hoge
 ```
 
 マージの時はGitHubからプルリクエストを出す方がやりやすいかも
+
+## pipenv
+ライブラリを使うときとか
+### 依存関係の追加  
+```
+pipenv install hoge
+```
+開発用の依存関係の場合
+```
+pipenv install --dev hoge
+```
+### 依存関係の削除
+```
+pipenv uninstall hoge
+pipenv clean
+```
+
+## terraform
+環境をデプロイするときとか
+### 現在の環境を適用する
+```
+terraform apply
+```
+### 現在の環境を破棄する
+```
+terraform destroy
+```
