@@ -2,6 +2,7 @@
 package/
 response.json
 lambda-scrape.zip
+lambda-api.zip
 
 # 環境によっては、これらのファイルが必要になる
 .DS_Store 

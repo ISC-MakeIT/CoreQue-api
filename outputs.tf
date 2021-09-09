@@ -18,3 +18,14 @@ output "s3_bucket" {
   value = aws_s3_bucket.b.bucket
 }
 
+output "lambda_api_function_name" {
+  description = "Name of the Lambda API function."
+
+  value = aws_lambda_function.lambda_api_function.function_name
+}
+
+output "base_url" {
+  description = "Base URL for API Gateway state."
+
+  value = aws_apigatewayv2_stage.lambda_api.invoke_url
+}
