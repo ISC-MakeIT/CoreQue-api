@@ -1,20 +1,3 @@
-terraform {
-  required_providers {
-    aws = {
-      source = "hashicorp/aws"
-    }
-    archive = {
-      source = "hashicorp/archive"
-    }
-    null = {
-      source = "hashicorp/null"
-    }
-  }
-}
-provider "aws" {
-  region = var.aws_region
-}
-
 # zipアーカイブを作成
 data "archive_file" "lambda_scrape_function" {
   type = "zip"
