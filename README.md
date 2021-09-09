@@ -38,6 +38,11 @@ pipenv install --dev hoge
 pipenv uninstall hoge
 pipenv clean
 ```
+### パッケージを読み込めないときとか
+```
+pipenv --venv
+```
+で環境が合っているか確認(Select Interpreter)
 
 ## terraform
 環境をデプロイするときとか
