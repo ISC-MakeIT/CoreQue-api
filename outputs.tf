@@ -18,3 +18,8 @@ output "s3_bucket" {
   value = aws_s3_bucket.b.bucket
 }
 
+output "lambda_api_function_name" {
+  description = "Name of the Lambda API function."
+
+  value = aws_lambda_function.lambda_api_function.function_name
+}
