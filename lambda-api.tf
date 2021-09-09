@@ -44,7 +44,7 @@ resource "aws_iam_role" "lambda_api_role" {
 
 # LambdaのIAMロールにPolicyをattach
 resource "aws_iam_role_policy_attachment" "lambda_api_policy" {
-  role = aws_iam_role.lambda_api_role.name
+  role       = aws_iam_role.lambda_api_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
@@ -62,48 +62,43 @@ resource "aws_lambda_function" "lambda_api_function" {
   role = aws_iam_role.lambda_api_role.arn
 }
 
-# API Gatewayの作成
-resource "aws_api_gateway_rest_api" "example" {
-  body = jsonencode({
-    openapi = "3.0.1"
-    info = {
-      title   = "example"
-      version = "1.0"
-    }
-    paths = {
-      "/path1" = {
-        get = {
-          x-amazon-apigateway-integration = {
-            httpMethod           = "GET"
-            payloadFormatVersion = "1.0"
-            type                 = "HTTP_PROXY"
-            uri                  = "https://ip-ranges.amazonaws.com/ip-ranges.json"
-          }
-        }
-      }
-    }
-  })
-
-  name = "example"
+# APIGatewayの作成
+resource "aws_apigatewayv2_api" "lambda_api" {
+  name          = "serverless_lambda_gw"
+  protocol_type = "HTTP"
 }
 
-# bodyが変更されるたびデプロイする設定
-resource "aws_api_gateway_deployment" "example" {
-  rest_api_id = aws_api_gateway_rest_api.example.id
+# ステージを定義
+resource "aws_apigatewayv2_stage" "lambda_api" {
+  api_id = aws_apigatewayv2_api.lambda_api.id
 
-  triggers = {
-    redeployment = sha1(jsonencode(aws_api_gateway_rest_api.example.body))
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
+  name        = "example"
+  auto_deploy = true
 }
 
-# APIのスナップショット用のリソースを作成
-resource "aws_api_gateway_stage" "example" {
-  deployment_id = aws_api_gateway_deployment.example.id
-  rest_api_id   = aws_api_gateway_rest_api.example.id
-  stage_name    = "example"
+# APIGatewayとLambdaを統合
+# integration_methodではPOSTを指定しないとなぜか Internal Server Error になる
+resource "aws_apigatewayv2_integration" "lambda_api" {
+  api_id = aws_apigatewayv2_api.lambda_api.id
+
+  integration_type   = "AWS_PROXY"
+  integration_uri    = aws_lambda_function.lambda_api_function.invoke_arn
+  integration_method = "POST"
 }
 
+# HTTPリクエストをAPIGatewayに送信
+resource "aws_apigatewayv2_route" "lambda_api" {
+  api_id    = aws_apigatewayv2_api.lambda_api.id
+  route_key = "GET /path1"
+  target    = "integrations/${aws_apigatewayv2_integration.lambda_api.id}"
+}
+
+# APIGatewayにLambdaの起動許可を与える
+resource "aws_lambda_permission" "lambda_api" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.lambda_api_function.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${aws_apigatewayv2_api.lambda_api.execution_arn}/*/*"
+}
