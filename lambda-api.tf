@@ -64,7 +64,7 @@ resource "aws_iam_role_policy_attachment" "lambda_api_policy" {
 
 # APIGatewayの作成
 resource "aws_apigatewayv2_api" "lambda_api" {
-  name          = "serverless_lambda_gw"
+  name          = "serverless_lambda_gateway"
   protocol_type = "HTTP"
 }
 
@@ -72,7 +72,7 @@ resource "aws_apigatewayv2_api" "lambda_api" {
 resource "aws_apigatewayv2_stage" "lambda_api" {
   api_id = aws_apigatewayv2_api.lambda_api.id
 
-  name        = "example"
+  name        = "meal"
   auto_deploy = true
 }
 
@@ -89,7 +89,7 @@ resource "aws_apigatewayv2_integration" "lambda_api" {
 # HTTPリクエストをAPIGatewayに送信
 resource "aws_apigatewayv2_route" "lambda_api" {
   api_id    = aws_apigatewayv2_api.lambda_api.id
-  route_key = "GET /path1"
+  route_key = "$default"
   target    = "integrations/${aws_apigatewayv2_integration.lambda_api.id}"
 }
 
