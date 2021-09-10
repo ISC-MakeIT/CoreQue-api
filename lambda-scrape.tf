@@ -1,16 +1,3 @@
-# zipアーカイブを作成
-data "archive_file" "lambda_scrape_function" {
-  type = "zip"
-
-  source_dir  = "${path.module}/lambda-scrape"
-  output_path = "${path.module}/lambda-scrape.zip"
-
-  # ビルドステップが完了するのを待つ
-  depends_on = [
-    null_resource.coreque_scrape_buildstep
-  ]
-}
-
 # lambda関数の作成
 resource "aws_lambda_function" "lambda_scrape_function" {
   function_name = "coreque_scrape"
@@ -23,6 +10,19 @@ resource "aws_lambda_function" "lambda_scrape_function" {
   source_code_hash = data.archive_file.lambda_scrape_function.output_base64sha256
 
   role = aws_iam_role.lambda_scrape_role.arn
+}
+
+# zipアーカイブを作成
+data "archive_file" "lambda_scrape_function" {
+  type = "zip"
+
+  source_dir  = "${path.module}/lambda-scrape"
+  output_path = "${path.module}/lambda-scrape.zip"
+
+  # ビルドステップが完了するのを待つ
+  depends_on = [
+    null_resource.coreque_scrape_buildstep
+  ]
 }
 
 # ビルドパイプラインの作成
