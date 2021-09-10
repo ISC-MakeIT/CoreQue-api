@@ -1,4 +1,11 @@
 terraform {
+  backend "remote" {
+    organization = "MakeIT2021"
+    workspaces {
+      name = "kamicon2021"
+    }
+  }
+
   required_providers {
     aws = {
       source = "hashicorp/aws"
@@ -11,6 +18,7 @@ terraform {
     }
   }
 }
+
 provider "aws" {
   region = var.aws_region
 }
