@@ -86,6 +86,29 @@ resource "aws_iam_role_policy" "lambda_scrape_role" {
   })
 }
 
+# スケジュールの作成
+resource "aws_cloudwatch_event_rule" "everyday" {
+  name                = "coreque_scrape_everyday"
+  description         = "Fires everyday"
+  schedule_expression = "cron(0 10 * * ? *)"
+}
+
+# イベントトリガーの作成
+resource "aws_cloudwatch_event_target" "everyday" {
+  target_id = "coreque_scrape"
+  rule      = aws_cloudwatch_event_rule.everyday.name
+  arn       = aws_lambda_function.lambda_scrape_function.arn
+}
+
+# lambdaの起動許可を与える
+resource "aws_lambda_permission" "lambda_scrape_call_permission" {
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.lambda_scrape_function.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.everyday.arn
+}
+
 # dynamodbの作成
 resource "aws_dynamodb_table" "basic-dynamodb-table" {
   name           = "Meal"
