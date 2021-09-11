@@ -12,30 +12,12 @@ resource "aws_lambda_function" "lambda_api_function" {
   role = aws_iam_role.lambda_api_role.arn
 }
 
-# ビルドパイプラインの作成
-resource "null_resource" "coreque_api_buildstep" {
-  triggers = {
-    handler      = base64sha256(file("lambda-api/handler.py"))
-    requirements = base64sha256(file("lambda-api/requirements.txt"))
-    build        = base64sha256(file("lambda-api/build.sh"))
-  }
-
-  provisioner "local-exec" {
-    command = "${path.module}/lambda-api/build.sh"
-  }
-}
-
 # zipアーカイブを作成
 data "archive_file" "lambda_api_function" {
   type = "zip"
 
   source_dir  = "${path.module}/lambda-api"
   output_path = "${path.module}/lambda-api.zip"
-
-  # ビルドステップが完了するのを待つ
-  depends_on = [
-    null_resource.coreque_api_buildstep
-  ]
 }
 
 # lambdaのIAMロールを作成

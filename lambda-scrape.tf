@@ -18,24 +18,6 @@ data "archive_file" "lambda_scrape_function" {
 
   source_dir  = "${path.module}/lambda-scrape"
   output_path = "${path.module}/lambda-scrape.zip"
-
-  # ビルドステップが完了するのを待つ
-  depends_on = [
-    null_resource.coreque_scrape_buildstep
-  ]
-}
-
-# ビルドパイプラインの作成
-resource "null_resource" "coreque_scrape_buildstep" {
-  triggers = {
-    handler     = base64sha256(file("lambda-scrape/handler.py"))
-    requiremens = base64sha256(file("lambda-scrape/requirements.txt"))
-    build       = base64sha256(file("lambda-scrape/build.sh"))
-  }
-
-  provisioner "local-exec" {
-    command = "${path.module}/lambda-scrape/build.sh"
-  }
 }
 
 # LambdaのIAMロールの作成
