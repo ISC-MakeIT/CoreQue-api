@@ -4,6 +4,7 @@ sys.path.insert(0, "package/")
 import boto3
 from boto3.dynamodb.conditions import Key
 from pprint import pprint
+import json
 
 
 def get_meal(dynamodb=None):
@@ -23,4 +24,4 @@ def lambda_handler(event, context):
     if meal:
         print("取得完了")
         pprint(meal, sort_dicts=False)
-    return {"statusCode": 200, "body": meal}
+    return {"statusCode": 200, "body": json.dumps(meal, indent=2)}
