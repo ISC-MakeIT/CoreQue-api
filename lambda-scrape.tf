@@ -1,16 +1,3 @@
-# zipアーカイブを作成
-data "archive_file" "lambda_scrape_function" {
-  type = "zip"
-
-  source_dir  = "${path.module}/lambda-scrape"
-  output_path = "${path.module}/lambda-scrape.zip"
-
-  # ビルドステップが完了するのを待つ
-  depends_on = [
-    null_resource.coreque_scrape_buildstep
-  ]
-}
-
 # lambda関数の作成
 resource "aws_lambda_function" "lambda_scrape_function" {
   function_name = "coreque_scrape"
@@ -25,17 +12,12 @@ resource "aws_lambda_function" "lambda_scrape_function" {
   role = aws_iam_role.lambda_scrape_role.arn
 }
 
-# ビルドパイプラインの作成
-resource "null_resource" "coreque_scrape_buildstep" {
-  triggers = {
-    handler     = base64sha256(file("lambda-scrape/handler.py"))
-    requiremens = base64sha256(file("lambda-scrape/requirements.txt"))
-    build       = base64sha256(file("lambda-scrape/build.sh"))
-  }
+# zipアーカイブを作成
+data "archive_file" "lambda_scrape_function" {
+  type = "zip"
 
-  provisioner "local-exec" {
-    command = "${path.module}/lambda-scrape/build.sh"
-  }
+  source_dir  = "${path.module}/lambda-scrape"
+  output_path = "${path.module}/lambda-scrape.zip"
 }
 
 # LambdaのIAMロールの作成
@@ -84,6 +66,29 @@ resource "aws_iam_role_policy" "lambda_scrape_role" {
       }
     ]
   })
+}
+
+# スケジュールの作成
+resource "aws_cloudwatch_event_rule" "everyday" {
+  name                = "coreque_scrape_everyday"
+  description         = "Fires everyday"
+  schedule_expression = "cron(0 10 * * ? *)"
+}
+
+# イベントトリガーの作成
+resource "aws_cloudwatch_event_target" "everyday" {
+  target_id = "coreque_scrape"
+  rule      = aws_cloudwatch_event_rule.everyday.name
+  arn       = aws_lambda_function.lambda_scrape_function.arn
+}
+
+# lambdaの起動許可を与える
+resource "aws_lambda_permission" "lambda_scrape_call_permission" {
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.lambda_scrape_function.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.everyday.arn
 }
 
 # dynamodbの作成
