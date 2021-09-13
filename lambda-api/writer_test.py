@@ -14,8 +14,8 @@ class TestWriter(unittest.TestCase):
 
     def test_body_write(self):
         want = {"statusCode": 200, "body": {"message": "test"}}
-
-        self.writer.body_write(message="test")
+        body = {"message": "test"}
+        self.writer.body_write(body=body)
         got = self.writer.get_response()
         self.assertEqual(want, got)
 
