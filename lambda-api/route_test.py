@@ -24,11 +24,10 @@ class TestRoute(unittest.TestCase):
         self.route.add(path="hoge", func=hoge)
         self.route.add(path="hoge/fuga", func=fuga)
 
-        want = [hoge, fuga]
-        got = []
-        got.append(self.route.handlers["hoge"])
-        got.append(self.route.handlers["hoge/fuga"])
-        self.assertEqual(want, got)
+        self.assertTrue(self.route.has_path("hoge"))
+        self.assertTrue(self.route.has_path("hoge/fuga"))
+
+        self.assertFalse(self.route.has_path("hoge/fuga/"))
 
     def test_run(self):
         spy_function_calling = SpyFunctionCalling()
@@ -44,6 +43,7 @@ class TestRoute(unittest.TestCase):
 
         self.assertTrue(self.route.run("hoge"))
         self.assertTrue(self.route.run("fuga"))
+
         self.assertFalse(self.route.run("nothing"))
 
         want = ["hoge", "fuga"]

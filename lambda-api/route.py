@@ -1,13 +1,15 @@
 class Route:
     def __init__(self):
-        self.handlers = {}
+        self.__handlers = {}
 
     def add(self, path: str, func: callable) -> None:
-        self.handlers[path] = func
+        self.__handlers[path] = func
+
+    def has_path(self, path: str) -> bool:
+        return path in self.__handlers
 
     def run(self, path: str) -> bool:
-        if path in self.handlers:
-            self.handlers[path]()
+        if self.has_path(path):
+            self.__handlers[path]()
             return True
-        else:
-            return False
+        return False
