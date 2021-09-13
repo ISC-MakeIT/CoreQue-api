@@ -69,6 +69,22 @@ class TestRoute(unittest.TestCase):
         got = spy_function_calling.called_function_names
         self.assertEqual(want, got)
 
+    def test_get_result(self):
+        """
+        ハンドラーが返す値を取得する
+        """
+        writer = Writer()
+        route = Route(writer=writer)
+
+        def hoge() -> dict:
+            return {"message": "hogehogehogegenoge"}
+
+        route.add(path="hoge", func=hoge)
+        route.run(path="hoge")
+
+        want = {"statusCode": 200, "body": {"message": "hogehogehogegenoge"}}
+        got = route.get_result()
+        self.assertEqual(want, got)
 
 
 if __name__ == "__main__":
