@@ -24,4 +24,5 @@ def lambda_handler(event, context):
     if meal:
         print("取得完了")
         pprint(meal, sort_dicts=False)
+    meal.append(event["pathParameters"])
     return {"statusCode": 200, "body": json.dumps(meal, indent=2)}
