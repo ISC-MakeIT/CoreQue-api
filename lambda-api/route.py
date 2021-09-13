@@ -4,3 +4,6 @@ class Route:
 
     def add(self, path: str, func: callable) -> None:
         self.handlers[path] = func
+
+    def run(self, path: str) -> None:
+        pass
