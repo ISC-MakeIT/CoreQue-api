@@ -10,9 +10,16 @@ class TestRoute(unittest.TestCase):
         def hoge():
             pass
 
-        self.route.add(path="action", func=hoge)
-        want = hoge
-        got = self.route.handlers["action"]
+        def fuga():
+            pass
+
+        self.route.add(path="hoge", func=hoge)
+        self.route.add(path="hoge/fuga", func=fuga)
+
+        want = []
+        got = []
+        got.append(self.route.handlers["hoge"])
+        got.append(self.route.handlers["hoge/fuga"])
         self.assertEqual(want, got)
 
 
