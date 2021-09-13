@@ -15,6 +15,9 @@ class TestRoute(unittest.TestCase):
         self.route = route.Route()
 
     def test_has_path(self):
+        """
+        パスが存在するかどうかを確認する
+        """
         handlers = {
             "hoge": lambda: None,
             "hoge/fuga": lambda: None,
@@ -42,6 +45,9 @@ class TestRoute(unittest.TestCase):
         self.assertFalse(self.route.has_path("hoge/fuga/"))
 
     def test_run(self):
+        """
+        ハンドラーが呼ばれることを確認する
+        """
         spy_function_calling = SpyFunctionCalling()
 
         def hoge():
@@ -61,6 +67,8 @@ class TestRoute(unittest.TestCase):
         want = ["hoge", "fuga"]
         got = spy_function_calling.called_function_names
         self.assertEqual(want, got)
+
+    
 
 
 if __name__ == "__main__":
