@@ -5,8 +5,9 @@ class Route:
     def add(self, path: str, func: callable) -> None:
         self.handlers[path] = func
 
-    def run(self, path: str) -> None:
+    def run(self, path: str) -> bool:
         if path in self.handlers:
             self.handlers[path]()
+            return
         else:
-            print("404")
+            return
