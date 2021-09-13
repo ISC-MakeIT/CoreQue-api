@@ -36,10 +36,17 @@ class TestRoute(unittest.TestCase):
         def hoge():
             spy_function_calling("hoge")
 
-        self.route.add(path="hoge", func=hoge)
-        self.route.run("hoge")
+        def fuga():
+            spy_function_calling("fuga")
 
-        want = ["hoge"]
+        self.route.add(path="hoge", func=hoge)
+        self.route.add(path="fuga", func=fuga)
+
+        self.assertTrue(self.route.run("hoge"))
+        self.assertTrue(self.route.run("fuga"))
+        self.assertFalse(self.route.run("nothing"))
+
+        want = ["hoge", "fuga"]
         got = spy_function_calling.called_function_names
         self.assertEqual(want, got)
 
