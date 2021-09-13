@@ -1,5 +1,6 @@
 import unittest
-import route
+from route import Route
+from writer import Writer
 
 
 class SpyFunctionCalling:
@@ -12,7 +13,7 @@ class SpyFunctionCalling:
 
 class TestRoute(unittest.TestCase):
     def setUp(self):
-        self.route = route.Route()
+        self.route = Route()
 
     def test_has_path(self):
         """
@@ -22,7 +23,7 @@ class TestRoute(unittest.TestCase):
             "hoge": lambda: None,
             "hoge/fuga": lambda: None,
         }
-        new_route = route.Route(handlers)
+        new_route = Route(handlers)
 
         self.assertTrue(new_route.has_path("hoge"))
         self.assertTrue(new_route.has_path("hoge/fuga"))
@@ -68,7 +69,6 @@ class TestRoute(unittest.TestCase):
         got = spy_function_calling.called_function_names
         self.assertEqual(want, got)
 
-    
 
 
 if __name__ == "__main__":
