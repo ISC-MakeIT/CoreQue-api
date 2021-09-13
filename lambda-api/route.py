@@ -1,6 +1,6 @@
 class Route:
     def __init__(self):
-        pass
+        self.handlers = {}
 
     def add(self, path, func):
-        pass
+        self.handlers[path] = func
