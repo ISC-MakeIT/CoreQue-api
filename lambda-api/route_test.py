@@ -14,6 +14,18 @@ class TestRoute(unittest.TestCase):
     def setUp(self):
         self.route = route.Route()
 
+    def test_has_path(self):
+        handlers = {
+            "hoge": lambda: None,
+            "hoge/fuga": lambda: None,
+        }
+        new_route = route.Route(handlers)
+
+        self.assertTrue(new_route.has_path("hoge"))
+        self.assertTrue(new_route.has_path("hoge/fuga"))
+
+        self.assertFalse(new_route.has_path("hoge/fuga/"))
+
     def test_add(self):
         def hoge():
             pass

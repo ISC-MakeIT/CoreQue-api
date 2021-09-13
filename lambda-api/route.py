@@ -1,6 +1,6 @@
 class Route:
-    def __init__(self):
-        self.__handlers = {}
+    def __init__(self, handlers: dict = {}) -> None:
+        self.__handlers = handlers
 
     def add(self, path: str, func: callable) -> None:
         self.__handlers[path] = func
