@@ -6,4 +6,7 @@ class Route:
         self.handlers[path] = func
 
     def run(self, path: str) -> None:
-        pass
+        if path in self.handlers:
+            self.handlers[path]()
+        else:
+            print("404")
