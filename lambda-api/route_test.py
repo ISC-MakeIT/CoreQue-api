@@ -6,11 +6,11 @@ class TestRoute(unittest.TestCase):
     def setUp(self):
         self.route = route.Route()
 
-    def test_append(self):
+    def test_add(self):
         def hoge():
             pass
 
-        self.route.add("action", hoge)
+        self.route.add(path="action", func=hoge)
         want = hoge
         got = self.route.handlers["action"]
         self.assertEqual(want, got)
