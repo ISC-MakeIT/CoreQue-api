@@ -16,7 +16,7 @@ class TestRoute(unittest.TestCase):
         self.route.add(path="hoge", func=hoge)
         self.route.add(path="hoge/fuga", func=fuga)
 
-        want = []
+        want = [hoge, fuga]
         got = []
         got.append(self.route.handlers["hoge"])
         got.append(self.route.handlers["hoge/fuga"])
