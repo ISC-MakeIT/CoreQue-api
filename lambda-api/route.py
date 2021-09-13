@@ -8,6 +8,6 @@ class Route:
     def run(self, path: str) -> bool:
         if path in self.handlers:
             self.handlers[path]()
-            return
+            return True
         else:
-            return
+            return False
