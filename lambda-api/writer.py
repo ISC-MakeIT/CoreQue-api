@@ -1,3 +1,6 @@
+import json
+
+
 class Writer:
     def __init__(self, response: dict = {}) -> None:
         self.__response = response
@@ -7,5 +10,8 @@ class Writer:
             self.__response["statusCode"] = 200
         return self.__response
 
-    def body_write(self, body: dict = {}) -> None:
-        self.__response["body"] = body
+    def body_write(self, body: str or dict) -> None:
+        if type(body) is dict:
+            self.__response["body"] = json.dumps(obj=body)
+        else:
+            self.__response["body"] = body
