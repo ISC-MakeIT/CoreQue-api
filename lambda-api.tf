@@ -89,7 +89,7 @@ resource "aws_apigatewayv2_integration" "lambda_api" {
 # HTTPリクエストをAPIGatewayに送信
 resource "aws_apigatewayv2_route" "lambda_api" {
   api_id    = aws_apigatewayv2_api.lambda_api.id
-  route_key = "$default"
+  route_key = "GET /{proxy+}"
   target    = "integrations/${aws_apigatewayv2_integration.lambda_api.id}"
 }
 
