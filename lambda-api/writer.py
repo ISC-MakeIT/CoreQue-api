@@ -7,5 +7,5 @@ class Writer:
             self.__response["statusCode"] = 200
         return self.__response
 
-    def body_write(self, body: dict = {}) -> None:
+    def body_write(self, body: str) -> None:
         self.__response["body"] = body
