@@ -76,13 +76,23 @@ class TestRoute(unittest.TestCase):
         writer = Writer()
         route = Route(writer=writer)
 
-        def hoge() -> dict:
-            return {"message": "hogehogehogegenoge"}
+        def hoge() -> str:
+            return '{"message": "hogehogehogegenoge"}'
 
         route.add(path="hoge", func=hoge)
         route.run(path="hoge")
 
-        want = {"statusCode": 200, "body": {"message": "hogehogehogegenoge"}}
+        want = {"statusCode": 200, "body": '{"message": "hogehogehogegenoge"}'}
+        got = route.get_result()
+        self.assertEqual(want, got)
+
+        def fuga() -> dict:
+            return {"message": "dict to str"}
+
+        route.add(path="fuga", func=fuga)
+        route.run(path="fuga")
+
+        want = {"statusCode": 200, "body": '{"message": "dict to str"}'}
         got = route.get_result()
         self.assertEqual(want, got)
 

@@ -25,6 +25,11 @@ class TestWriter(unittest.TestCase):
         got = self.writer.get_response()
         self.assertEqual(want, got)
 
+        body = {"message": "test"}
+        self.writer.body_write(body=body)
+        got = self.writer.get_response()
+        self.assertEqual(want, got)
+
 
 if __name__ == "__main__":
     unittest.main()
