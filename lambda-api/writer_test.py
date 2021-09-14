@@ -19,8 +19,8 @@ class TestWriter(unittest.TestCase):
         """
         レスポンスのbodyに書き込む
         """
-        want = {"statusCode": 200, "body": {"message": "test"}}
-        body = {"message": "test"}
+        want = {"statusCode": 200, "body": '{"message": "test"}'}
+        body = '{"message": "test"}'
         self.writer.body_write(body=body)
         got = self.writer.get_response()
         self.assertEqual(want, got)
