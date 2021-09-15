@@ -4,9 +4,12 @@ import sys
 sys.path.insert(0, "package/")
 
 import requests
-
+import lxml
+from bs4 import BeautifulSoup
 
 def lambda_handler(event, context):
+    
+
 
     my_ip = requests.get("https://api.ipify.org?format=json").json()
 
