@@ -3,15 +3,11 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 name = "pypi"
 
+[scripts]
+test = "python -m unittest discover -p '*_test.py' -v "
+
 [packages]
-<<<<<<< HEAD
-bs4 = "*"
-lxml = "*"
-=======
 boto3 = "*"
-pytz = "*"
-requests = "*"
->>>>>>> ce6c6cd30c15c5625e48316f6deee2dcdc670e1e
 
 [dev-packages]
 
