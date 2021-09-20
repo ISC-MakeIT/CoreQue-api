@@ -1,8 +1,8 @@
+import requests 
 import unittest
+import re
 from model import *
-import requests
 from bs4 import BeautifulSoup
-import re 
 # testこーど実行するときpipenv run testを実行するとテストできる
 
 
@@ -35,30 +35,22 @@ class ModelTest(unittest.TestCase):
                 nutrition = []
                 a = re.sub(r"[g|kcal]",  ",",  data)
                 b = re.split(r'（|）|kcal |、',  a)
-                c = b.split(',' '')
+                d = ','.join(b)
+                c = d.split(',' '')
                 strandint = list(filter(None, c))
                 for i in strandint:
                     Coordinate = i.find("：")+1
                     onlyNum =i[Coordinate:]
                     nutrition.append(onlyNum)
-                return nutrition
+                
     
             def return_name()->str:
                 name = soup.find("h1")
                 Hood_name = name.text
                 return Hood_name
-                         
-                         
-                         
-                         
-            return return_num_nutrition()
-            return return_name()
-    
-    
-    
-    
-    
-    
+
+            return return_name(), return_num_nutrition()
+            
     
         #     def create_image_id(url:str)str->:
         #         '''
@@ -73,11 +65,13 @@ class ModelTest(unittest.TestCase):
 
         
         
-    URL = 'https://www.sej.co.jp/products/a/item/041671/'
-    s = get_nutrition_put(URL)
-    print(s)
+        URL = 'https://www.sej.co.jp/products/a/item/041671/'
+        s = get_nutrition_put(URL)
+        print(s)
 
-
+        # urls = get_url_hand_over()
+        # for url in urls:
+            # get_nutrition_put
 
 
         # self.assertTrue(True)
