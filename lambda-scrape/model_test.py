@@ -9,17 +9,27 @@ from bs4 import BeautifulSoup
 
 class ModelTest(unittest.TestCase):
     def test_hoge(self):
-        def get_url_hand_over(baseURLa:str)->list:
-            """ 
-            this fanction is get baseURL 
-            and return itemURL list 
+        def get_url_hand_over(baseURL:str)->list:
+            """ This fanction is get baseURL and return itemURL list. 
             """
-            pass
+            result =[]
+            res = requests.get(baseURL)
+            if res.status_code != 200:
+                return false
+            soup = BeautifulSoup(res.content, 'html.parser')
+            tentative = soup.find_all('figure')
+            number_of_times = len(tentative) -1
+            for i in range(number_of_times): 
+                tentative = soup.find_all('figure')[i]
+                link = tentative.find("a")
+                url = link.get('href')
+                result.append(url)
+            return result
 
         def get_nutrition_put(url:str):
             
         #  connect and organize html
-            res = requests.get(url)
+            res = requests.get('https://www.sej.co.jp/{}'.format(url))
             if res.status_code != 200:
                 return false
             soup = BeautifulSoup(res.content, 'html.parser')
@@ -28,7 +38,7 @@ class ModelTest(unittest.TestCase):
             def return_num_nutrition()->list:
             #     養素の数字だけ返す
                 
-                nutrition = []
+                
                 td = soup.find_all('td')
                 data = td[1].text
 
@@ -42,7 +52,7 @@ class ModelTest(unittest.TestCase):
                     Coordinate = i.find("：")+1
                     onlyNum =i[Coordinate:]
                     nutrition.append(onlyNum)
-                
+                return nutrition
     
             def return_name()->str:
                 name = soup.find("h1")
@@ -62,17 +72,21 @@ class ModelTest(unittest.TestCase):
         #     def put():
         #          return print(data)
         #     put()
+    
 
+        URL = 'https://www.sej.co.jp/products/a/sandwich/1/l100/'
+        urls = get_url_hand_over(URL)
+        result = {}
+        for url in urls:
+            name, nutrition = get_nutrition_put(url)
+            result[name] = nutrition
+        print(result)
+        # サンドイッチのやつとかカテゴリ別ごとに全部取れるようになったのであとはawsと写真です
+ 
         
         
-        URL = 'https://www.sej.co.jp/products/a/item/041671/'
-        s = get_nutrition_put(URL)
-        print(s)
 
-        # urls = get_url_hand_over()
-        # for url in urls:
-            # get_nutrition_put
-
+            
 
         # self.assertTrue(True)
 
