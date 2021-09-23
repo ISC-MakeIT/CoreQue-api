@@ -30,7 +30,7 @@ def put_meal(id):
             "Protein": 4,
             "Sodium": 113,
             "details": {
-                "Name": "Rice Ball",
+                "Id": id,
                 "Classification": "riceball",
                 "Name": "tunamayo",
                 "Calorie": 3,
