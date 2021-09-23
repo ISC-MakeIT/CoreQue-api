@@ -11,14 +11,6 @@ import uuid
 import datetime
 from pytz import timezone
 import requests
-<<<<<<< HEAD
-import lxml
-from bs4 import BeautifulSoup
-
-def lambda_handler(event, context):
-    
-
-=======
 
 table_name = "Meal"
 
@@ -54,7 +46,6 @@ def put_meal(id):
 
 def upload_file(file_name, bucket, object_name=None):
     """Upload a file to an S3 bucket
->>>>>>> ce6c6cd30c15c5625e48316f6deee2dcdc670e1e
 
     :param file_name: File to upload
     :param bucket: Bucket to upload to

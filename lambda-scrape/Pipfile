@@ -10,6 +10,7 @@ test = 'python -m unittest discover -p "*_test.py" -v'
 boto3 = "*"
 pytz = "*"
 requests = "*"
+bs4 = "*"
 
 [dev-packages]
 
