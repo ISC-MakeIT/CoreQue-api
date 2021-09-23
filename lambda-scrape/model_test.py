@@ -49,6 +49,22 @@ class TestModel(unittest.TestCase):
         #     result.append(url)
         # return result
 
+    def test_get_nutrition(self):
+        """
+        URLを受け取って栄養素と名前をを含むdictを返す
+        """
+        want = {
+
+        }
+
+        seven_url_prefix = 'https://www.sej.co.jp/{}'
+        item_url_suffix = '/products/a/item/050922/'
+        try:
+            got = get_nutrition()
+        except:
+            print("Not found")
+        self.assertEqual(want, got)
+
 
 if __name__ == "__main__":
     unittest.main()

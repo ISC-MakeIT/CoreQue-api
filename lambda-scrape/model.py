@@ -23,6 +23,10 @@ def get_url_hand_over(baseURL: str) -> list:
     return result
 
 
+def get_nutrition(url: str) -> dict:
+    pass
+
+
 # class ModelTest(unittest.TestCase):
 #     def test_get_url_hand_over(self, baseURL: str) -> list or bool:
 #         """ This function is get baseURL and return itemURL list.
