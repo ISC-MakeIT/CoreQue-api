@@ -10,7 +10,7 @@ from pytz import timezone
 
 class TestModel(unittest.TestCase):
     def test_get_url_hand_over(self):
-        """ 
+        """
         ベースURLに商品URLが一覧されてるので、全てのURLをリストで返す。
         """
 
@@ -35,34 +35,42 @@ class TestModel(unittest.TestCase):
         got = get_url_hand_over(baseURL)
 
         self.assertEqual(want, got)
-        # result = []
-        # res = requests.get(baseURL)
-        # if res.status_code != 200:
-        #     return False
-        # soup = BeautifulSoup(res.content, 'html.parser')
-        # tentative = soup.find_all('figure')
-        # number_of_times = len(tentative) - 1
-        # for i in range(number_of_times):
-        #     tentative = soup.find_all('figure')[i]
-        #     link = tentative.find("a")
-        #     url = link.get('href')
-        #     result.append(url)
-        # return result
 
     def test_get_nutrition(self):
         """
         URLを受け取って栄養素と名前をを含むdictを返す
+        熱量：456kcal、たんぱく質：17.6g、脂質：27.7g、炭水化物：34.6g（糖質：33.3g、食物繊維：1.3g）、食塩相当量：2.5g
         """
-        want = {
+        timestamp = str(datetime.datetime.now(timezone("Asia/Tokyo")))
+        seven_url_prefix = 'https://www.sej.co.jp{}'
+        item_url_suffix = '/products/a/item/050922/'
+        url = seven_url_prefix.format(item_url_suffix)
 
+        want = {
+            "Id": "hogefuga",
+            # "Classification": "riceball",
+            "Name": "玉子焼き＆海老カツサンド",
+            "Calorie": 456,
+            "Protein": 17,
+            "Fat": 27,
+            "Carbohydrate": 34,
+            "Fibre": 1,
+            "details": {
+                "Id": "hogefuga",
+                # "Classification": "riceball",
+                "Name": "玉子焼き＆海老カツサンド",
+                "Calorie": 456,
+                "Protein": 17,
+                "Fat": 27,
+                "Carbohydrate": 34,
+                "Fibre": 1,
+                "Timestamp": timestamp,
+            }
         }
 
-        seven_url_prefix = 'https://www.sej.co.jp/{}'
-        item_url_suffix = '/products/a/item/050922/'
-        try:
-            got = get_nutrition()
-        except:
-            print("Not found")
+        id = "hogefuga"
+
+        got = get_nutrition(url, id, timestamp)
         self.assertEqual(want, got)
 
 
