@@ -136,7 +136,7 @@ resource "aws_dynamodb_table" "basic-dynamodb-table" {
   }
 
   attribute {
-    name = "Sodium"
+    name = "Fibre"
     type = "N"
   }
 
@@ -170,8 +170,8 @@ resource "aws_dynamodb_table" "basic-dynamodb-table" {
   }
 
   local_secondary_index {
-    name               = "SodiumIndex"
-    range_key          = "Sodium"
+    name               = "FibreIndex"
+    range_key          = "Fibre"
     non_key_attributes = ["details"]
     projection_type    = "INCLUDE"
   }
