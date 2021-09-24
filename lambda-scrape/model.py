@@ -58,7 +58,7 @@ def get_nutrition(url: str, id: str, timestamp: str) -> dict:
         "details": {
             "Id": id,
             # "Classification": "riceball",
-            "Name": "玉子焼き＆海老カツサンド",
+            "Name": soup.find("h1").text,
             "Calorie": str_to_int(nutrition[0]),
             "Protein": str_to_int(nutrition[1]),
             "Fat": str_to_int(nutrition[2]),
