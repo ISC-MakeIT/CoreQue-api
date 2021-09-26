@@ -5,6 +5,11 @@ from model import *
 from bs4 import BeautifulSoup
 import datetime
 from pytz import timezone
+import boto3
+from moto import mock_dynamodb2
+import json
+
+
 # testこーど実行するときpipenv run testを実行するとテストできる
 
 
@@ -72,6 +77,11 @@ class TestModel(unittest.TestCase):
 
         got = get_nutrition(url, id, timestamp)
         self.assertEqual(want, got)
+
+    @mock_dynamodb2
+    def test_dynamodb_poi(self):
+
+        self.assertTrue(dynamodb_poi())
 
 
 if __name__ == "__main__":

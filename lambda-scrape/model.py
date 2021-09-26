@@ -1,10 +1,13 @@
 import requests
 import unittest
+import boto3
 import re
 from model import *
 from bs4 import BeautifulSoup
 import datetime
 from pytz import timezone
+import logging
+from botocore.exceptions import ClientError
 
 
 def get_url_hand_over(baseURL: str) -> list:
@@ -69,3 +72,74 @@ def get_nutrition(url: str, id: str, timestamp: str) -> dict:
     }
 
     return item
+
+
+def dynamodb_poi(dynamodb=None) -> bool:
+    if not dynamodb:
+        dynamodb = boto3.resource(
+            'dynamodb',
+            endpoint_url='http://localhost:8000',
+            region_name='ap-northeast-1'
+        )
+
+    table = dynamodb.create_table(
+        TableName='Movies',
+        KeySchema=[
+            {
+                'AttributeName': 'year',
+                'KeyType': 'HASH'
+            },
+            {
+                'AttributeName': 'title',
+                'KeyType': 'RANGE'
+            }
+        ],
+        AttributeDefinitions=[
+            {
+                'AttributeName': 'year',
+                'AttributeType': 'N'
+            },
+            {
+                'AttributeName': 'title',
+                'AttributeType': 'S'
+            }
+        ],
+        ProvisionedThroughput={
+            'ReadCapacityUnits': 1,
+            'WriteCapacityUnits': 1
+        }
+    )
+
+    # Wait until the table exists.
+    table.meta.client.get_waiter('table_exists').wait(TableName='Movies')
+
+    if table.table_status == 'ACTIVE':
+        return True
+    return False
+
+# def dynamo_poi(itemData):
+#     table_name = "Meal"
+#     dynamodb = boto3.resource("dynamodb")
+#     table = dynamodb.Table(table_name)
+
+#     def poi(data):
+#         return table.put_item(data)
+
+#     poi(itemData)
+
+# def s3_poihuru(file_name, bucket, object_name):
+#     if object_name is None:
+#         object_name = file_name
+
+#     # Upload the file
+#     s3 = boto3.client("s3")
+#     try:
+#         s3.put_object(
+#             Bucket="meal-image-bucket",
+#             Key=file_name+".png",
+#             Body=requests.get("http://placehold.jp/150x150.png").content,
+#         )
+#     except ClientError as e:
+#         logging.error(e)
+#         return False
+#     return True
