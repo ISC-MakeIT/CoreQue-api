@@ -5,6 +5,9 @@ from model import *
 from bs4 import BeautifulSoup
 import datetime
 from pytz import timezone
+from moto import mock_dynamodb2
+import boto3
+
 # testこーど実行するときpipenv run testを実行するとテストできる
 
 
@@ -29,7 +32,7 @@ class TestModel(unittest.TestCase):
             "/products/a/item/050933/",
             "/products/a/item/050926/",
             "/products/a/item/050937/",
-            "/products/a/item/050731/"
+            "/products/a/item/050731/",
         ]
         baseURL = "https://www.sej.co.jp/products/a/sandwich/1/l15/"
         got = get_url_hand_over(baseURL)
@@ -42,8 +45,8 @@ class TestModel(unittest.TestCase):
         熱量：456kcal、たんぱく質：17.6g、脂質：27.7g、炭水化物：34.6g（糖質：33.3g、食物繊維：1.3g）、食塩相当量：2.5g
         """
         timestamp = str(datetime.datetime.now(timezone("Asia/Tokyo")))
-        seven_url_prefix = 'https://www.sej.co.jp{}'
-        item_url_suffix = '/products/a/item/050922/'
+        seven_url_prefix = "https://www.sej.co.jp{}"
+        item_url_suffix = "/products/a/item/050922/"
         url = seven_url_prefix.format(item_url_suffix)
 
         want = {
@@ -65,13 +68,50 @@ class TestModel(unittest.TestCase):
                 "Carbohydrate": 34,
                 "Fibre": 1,
                 "Timestamp": timestamp,
-            }
+            },
         }
 
         id = "hogefuga"
 
         got = get_nutrition(url, id, timestamp)
         self.assertEqual(want, got)
+
+    @mock_dynamodb2
+    def test_dynamodb_poi(self):
+        dynamodb = boto3.resource("dynamodb", region_name="ap-northeast-1")
+        dynamodb.create_table(
+            TableName="Movies",
+            KeySchema=[
+                {"AttributeName": "year", "KeyType": "HASH"},  # Partition key
+                {"AttributeName": "title", "KeyType": "RANGE"},  # Sort key
+            ],
+            AttributeDefinitions=[
+                {"AttributeName": "year", "AttributeType": "N"},
+                {"AttributeName": "title", "AttributeType": "S"},
+            ],
+            ProvisionedThroughput={"ReadCapacityUnits": 10, "WriteCapacityUnits": 10},
+        )
+
+        want = 200
+        item = {
+            "year": 2013,
+            "title": "Turn It Down, Or Else!",
+            "info": {
+                "directors": ["Alice Smith", "Bob Jones"],
+                "release_date": "2013-01-18T00:00:00Z",
+                "rating": int(6.2),
+                "genres": ["Comedy", "Drama"],
+                "image_url": "http://ia.media-imdb.com/images/N/O9ERWAU7FS797AJ7LU8HN09AMUP908RLlo5JF90EWR7LJKQ7@@._V1_SX400_.jpg",
+                "plot": "A rock band plays their music at high volumes, annoying the neighbors.",
+                "rank": 11,
+                "running_time_secs": 5215,
+                "actors": ["David Matthewman", "Ann Thomas", "Jonathan G. Neff"],
+            },
+        }
+        got = dynamodb_poi(item=item, table_name="Movies")["ResponseMetadata"][
+            "HTTPStatusCode"
+        ]
+        self.assertTrue(want, got)
 
 
 if __name__ == "__main__":
