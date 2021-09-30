@@ -24,7 +24,7 @@ def get_url_hand_over(html: str) -> list:
     return result
 
 
-def get_nutrition(url: str, id: str, timestamp: str) -> dict:
+def get_nutrition(url: str, id: str, classification: str, timestamp: str) -> dict:
     def str_to_int(value: str) -> int:
         return int(float(value))
 
@@ -49,7 +49,7 @@ def get_nutrition(url: str, id: str, timestamp: str) -> dict:
 
     item = {
         "Id": id,
-        # "Classification": "riceball",
+        "Classification": classification,
         "Name": soup.find("h1").text,
         "Calorie": str_to_int(nutrition[0]),
         "Protein": str_to_int(nutrition[1]),
@@ -58,7 +58,7 @@ def get_nutrition(url: str, id: str, timestamp: str) -> dict:
         "Fibre": str_to_int(nutrition[5]),
         "details": {
             "Id": id,
-            # "Classification": "riceball",
+            "Classification": classification,
             "Name": soup.find("h1").text,
             "Calorie": str_to_int(nutrition[0]),
             "Protein": str_to_int(nutrition[1]),
