@@ -51,10 +51,11 @@ class TestModel(unittest.TestCase):
         seven_url_prefix = "https://www.sej.co.jp{}"
         item_url_suffix = "/products/a/item/050922/"
         url = seven_url_prefix.format(item_url_suffix)
+        classification = "sandwich"
 
         want = {
             "Id": "hogefuga",
-            # "Classification": "riceball",
+            "Classification": "sandwich",
             "Name": "玉子焼き＆海老カツサンド",
             "Calorie": 456,
             "Protein": 17,
@@ -63,7 +64,7 @@ class TestModel(unittest.TestCase):
             "Fibre": 1,
             "details": {
                 "Id": "hogefuga",
-                # "Classification": "riceball",
+                "Classification": "sandwich",
                 "Name": "玉子焼き＆海老カツサンド",
                 "Calorie": 456,
                 "Protein": 17,
@@ -76,7 +77,7 @@ class TestModel(unittest.TestCase):
 
         id = "hogefuga"
 
-        got = get_nutrition(url, id, timestamp)
+        got = get_nutrition(url, id, classification, timestamp)
         self.assertEqual(want, got)
 
     @mock_dynamodb2
