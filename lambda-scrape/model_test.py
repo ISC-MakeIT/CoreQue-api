@@ -18,24 +18,26 @@ class TestModel(unittest.TestCase):
         """
 
         want = [
-            "/products/a/item/050922/",
-            "/products/a/item/050949/",
-            "/products/a/item/050942/",
-            "/products/a/item/050940/",
-            "/products/a/item/050941/",
-            "/products/a/item/050939/",
-            "/products/a/item/050943/",
-            "/products/a/item/050925/",
-            "/products/a/item/050918/",
-            "/products/a/item/050944/",
-            "/products/a/item/050935/",
-            "/products/a/item/050933/",
-            "/products/a/item/050926/",
-            "/products/a/item/050937/",
+            "/products/a/item/050958/",
+            "/products/a/item/050953/",
+            "/products/a/item/050952/",
+            "/products/a/item/050968/",
+            "/products/a/item/050964/",
+            "/products/a/item/050959/",
+            "/products/a/item/050955/",
+            "/products/a/item/050960/",
+            "/products/a/item/050954/",
+            "/products/a/item/050946/",
+            "/products/a/item/050945/",
+            "/products/a/item/050628/",
+            "/products/a/item/050449/",
+            "/products/a/item/050951/",
             "/products/a/item/050731/",
         ]
-        baseURL = "https://www.sej.co.jp/products/a/sandwich/1/l15/"
-        got = get_url_hand_over(baseURL)
+        with open("mock/sandwich.txt", "r") as f:
+            data = f.read()
+        html = data
+        got = get_url_hand_over(html)
 
         self.assertEqual(want, got)
 
