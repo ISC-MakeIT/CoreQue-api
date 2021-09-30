@@ -81,3 +81,18 @@ def dynamodb_poi(item: dict, table_name: str, dynamodb=None) -> dict:
         logger.error("Error put item")
         raise (e)
     return response
+
+
+def s3_poi(file_name: str, content: bytes, bucket_name: str, s3=None):
+    if not s3:
+        s3 = boto3.client("s3", region_name="us-east-1")
+    try:
+        response = s3.put_object(
+            Bucket=bucket_name,
+            Key=file_name + ".png",
+            Body=content,
+        )
+    except Exception as e:
+        logger.error("Error put item")
+        raise (e)
+    return response
