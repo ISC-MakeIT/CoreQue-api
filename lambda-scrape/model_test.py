@@ -5,8 +5,9 @@ from model import *
 from bs4 import BeautifulSoup
 import datetime
 from pytz import timezone
-from moto import mock_dynamodb2
+from moto import mock_dynamodb2, mock_s3
 import boto3
+import uuid
 
 # testこーど実行するときpipenv run testを実行するとテストできる
 
@@ -114,6 +115,20 @@ class TestModel(unittest.TestCase):
             "HTTPStatusCode"
         ]
         self.assertTrue(want, got)
+
+    @mock_s3
+    def test_s3_poi(self):
+        bucket_name = "meal-image-bucket"
+        s3 = boto3.resource("s3", region_name="us-east-1")
+        s3.create_bucket(Bucket=bucket_name)
+
+        want = 200
+        file_name = str(uuid.uuid4())
+        content = requests.get("http://placehold.jp/150x150.png").content
+        got = s3_poi(file_name, content, bucket_name)["ResponseMetadata"][
+            "HTTPStatusCode"
+        ]
+        self.assertEqual(want, got)
 
 
 if __name__ == "__main__":
