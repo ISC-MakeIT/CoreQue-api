@@ -1,17 +1,37 @@
 import uuid
 from model import *
 import requests
+import pprint
 
-baseURL = "https://www.sej.co.jp/products/a/sandwich/1/l15/"
-html = requests.get(baseURL).content
-item_urls_suffix = get_url_hand_over(html)
+baseURLs = [
+    {"url": "https://www.sej.co.jp/products/a/sandwich/", "classification": "sandwich"},
+    {"url": "https://www.sej.co.jp/products/a/onigiri/", "classification": "onigiri"},
+    {"url": "https://www.sej.co.jp/products/a/bento/", "classification": "bento"},
+    {"url": "https://www.sej.co.jp/products/a/bread/", "classification": "bread"},
+]
 
-seven_url_prefix = "https://www.sej.co.jp{}"
-resp = []
-for suffix in item_urls_suffix:
-    url = seven_url_prefix.format(suffix)
-    timestamp = str(datetime.datetime.now(timezone("Asia/Tokyo")))
-    id = str(uuid.uuid4())
-    resp.append(get_nutrition(url, id, timestamp))
 
-print(resp)
+def main():
+    try:
+        resp = []
+        for baseURL in baseURLs:
+            print(baseURL)
+            html = requests.get(baseURL["url"]).content
+            item_urls = get_url_hand_over(html)
+
+            seven_url_prefix = "https://www.sej.co.jp{}"
+
+            for suffix in item_urls:
+                url = seven_url_prefix.format(suffix[0])
+                timestamp = str(datetime.datetime.now(timezone("Asia/Tokyo")))
+                id = str(uuid.uuid4())
+                classification = baseURL["classification"]
+                resp.append(get_nutrition(url, id, classification, timestamp))
+        pprint.pprint(resp)
+    except Exception as e:
+        print(resp)
+        raise e
+
+
+if __name__ == "__main__":
+    main()
