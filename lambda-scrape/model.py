@@ -11,7 +11,7 @@ from logging import getLogger
 logger = getLogger(__name__)
 
 
-def get_url_hand_over(html: str) -> list:
+def get_url_hand_over(html: bytes) -> list:
     result = []
     soup = BeautifulSoup(html, "html.parser")
     tentative = soup.find_all("figure")
