@@ -46,17 +46,8 @@ def get_nutrition(url: str, id: str, classification: str, timestamp: str) -> dic
         Coordinate = i.find("：") + 1
         onlyNum = i[Coordinate:]
         nutrition.append(onlyNum)
-
-    item = {
-        "Id": id,
-        "Classification": classification,
-        "Name": soup.find("h1").text,
-        "Calorie": str_to_int(nutrition[0]),
-        "Protein": str_to_int(nutrition[1]),
-        "Fat": str_to_int(nutrition[2]),
-        "Carbohydrate": str_to_int(nutrition[3]),
-        "Fibre": str_to_int(nutrition[5]),
-        "details": {
+    try:
+        item = {
             "Id": id,
             "Classification": classification,
             "Name": soup.find("h1").text,
@@ -65,10 +56,21 @@ def get_nutrition(url: str, id: str, classification: str, timestamp: str) -> dic
             "Fat": str_to_int(nutrition[2]),
             "Carbohydrate": str_to_int(nutrition[3]),
             "Fibre": str_to_int(nutrition[5]),
-            "Timestamp": timestamp,
-        },
-    }
-    return item
+            "details": {
+                "Id": id,
+                "Classification": classification,
+                "Name": soup.find("h1").text,
+                "Calorie": str_to_int(nutrition[0]),
+                "Protein": str_to_int(nutrition[1]),
+                "Fat": str_to_int(nutrition[2]),
+                "Carbohydrate": str_to_int(nutrition[3]),
+                "Fibre": str_to_int(nutrition[5]),
+                "Timestamp": timestamp,
+            },
+        }
+        return item
+    except:
+        return {}
 
 
 def dynamodb_poi(item: dict, table_name: str, dynamodb=None) -> dict:
