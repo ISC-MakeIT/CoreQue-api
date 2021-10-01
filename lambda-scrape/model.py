@@ -20,7 +20,9 @@ def get_url_hand_over(html: str) -> list:
         tentative = soup.find_all("figure")[i]
         link = tentative.find("a")
         url = link.get("href")
-        result.append(url)
+        img = link.find("img")
+        img_url = img.get("data-original")
+        result.append([url, img_url])
     return result
 
 
@@ -91,7 +93,7 @@ def s3_poi(file_name: str, content: bytes, bucket_name: str, s3=None):
     try:
         response = s3.put_object(
             Bucket=bucket_name,
-            Key=file_name + ".png",
+            Key=file_name + ".jpg",
             Body=content,
         )
     except Exception as e:
