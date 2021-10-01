@@ -4,7 +4,7 @@ resource "aws_lambda_function" "lambda_scrape_function" {
 
   handler = "handler.lambda_handler"
   runtime = "python3.8"
-  timeout = "30"
+  timeout = "600"
 
   filename         = data.archive_file.lambda_scrape_function.output_path
   source_code_hash = data.archive_file.lambda_scrape_function.output_base64sha256
