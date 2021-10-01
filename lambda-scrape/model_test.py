@@ -80,6 +80,11 @@ class TestModel(unittest.TestCase):
         got = get_nutrition(url, id, classification, timestamp)
         self.assertEqual(want, got)
 
+        want = {}
+        url = "https://www.sej.co.jp/products/a/item/290145/"
+        got = get_nutrition(url, id, classification, timestamp)
+        self.assertEqual(want, got)
+
     @mock_dynamodb2
     def test_dynamodb_poi(self):
         dynamodb = boto3.resource("dynamodb", region_name="ap-northeast-1")
