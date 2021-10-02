@@ -10,6 +10,8 @@ from route import Route
 from writer import Writer
 
 from decimal import Decimal
+
+
 def decimal_default_proc(obj):
     if isinstance(obj, Decimal):
         return float(obj)
@@ -43,10 +45,12 @@ def onigiri() -> list:
     return response["Items"]
 
 
-def item(id: str) -> list:
+def item(params: list) -> list:
     table = dynamodb.Table("Meal")
 
-    response = table.get_item(Key={"Id": id, "Classification": "onigiri"})
+    response = table.get_item(
+        Key={"Id": params["Id"], "Classification": params["Classification"]}
+    )
     return json.dumps(response["Item"], default=decimal_default_proc)
 
 
@@ -54,14 +58,14 @@ writer = Writer()
 route = Route(writer=writer)
 route.add(path="convenience", func=convenience)
 route.add(path="onigiri", func=onigiri)
-route.add(path="item", func=item, key="id")
+route.add(path="item", func=item)
 
 
 def lambda_handler(event, context):
     if "queryStringParameters" in event:
         route.run(
             path=event["pathParameters"]["proxy"],
-            param=event["queryStringParameters"],
+            params=event["queryStringParameters"],
         )
     else:
         route.run(path=event["pathParameters"]["proxy"])
