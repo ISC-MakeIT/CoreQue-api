@@ -6,20 +6,17 @@ from boto3.dynamodb.conditions import Key
 from pprint import pprint
 import json
 
-
-# def get_meal(dynamodb=None):
-#     if not dynamodb:
-#         dynamodb = boto3.resource("dynamodb")
-#     table = dynamodb.Table("Meal")
-
-#     response = table.query(
-#         IndexName="MealClassifyIndex",
-#         KeyConditionExpression=Key("Classification").eq("riceball"),
-#     )
-#     return response["Items"]
-
 from route import Route
 from writer import Writer
+
+from decimal import Decimal
+
+
+def decimal_default_proc(obj):
+    if isinstance(obj, Decimal):
+        return float(obj)
+    raise TypeError
+
 
 placehold_dir_path = "./json/placehold/"
 convenience_json_path = placehold_dir_path + "convenience.json"
@@ -38,7 +35,7 @@ def convenience() -> dict:
         return file_not_found_error_json
 
 
-def onigiri() -> dict:
+def onigiri() -> list:
     table = dynamodb.Table("Meal")
 
     response = table.query(
@@ -48,19 +45,29 @@ def onigiri() -> dict:
     return response["Items"]
 
 
+def item(params: list) -> list:
+    table = dynamodb.Table("Meal")
+
+    response = table.get_item(
+        Key={"Id": params["Id"], "Classification": params["Classification"]}
+    )
+    return json.dumps(response["Item"], default=decimal_default_proc)
+
+
 writer = Writer()
 route = Route(writer=writer)
 route.add(path="convenience", func=convenience)
 route.add(path="onigiri", func=onigiri)
+route.add(path="item", func=item)
 
 
 def lambda_handler(event, context):
-    # meal = get_meal()
-    # if meal:
-    #     print("取得完了")
-    #     pprint(meal, sort_dicts=False)
-    # return {"statusCode": 200, "body": json.dumps(meal, indent=2)}
-
-    route.run(path=event["pathParameters"]["proxy"])
+    if "queryStringParameters" in event:
+        route.run(
+            path=event["pathParameters"]["proxy"],
+            params=event["queryStringParameters"],
+        )
+    else:
+        route.run(path=event["pathParameters"]["proxy"])
     resp = route.get_result()
     return resp

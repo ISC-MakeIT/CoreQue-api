@@ -96,6 +96,30 @@ class TestRoute(unittest.TestCase):
         got = route.get_result()
         self.assertEqual(want, got)
 
+        def param(params: list) -> dict:
+            if params["id"] == "hoge":
+                return {"message": "get pathParameter"}
+            return {"message": "nothing"}
+
+        route.add(path="param", func=param)
+        route.run(path="param", params={"id": "hoge", "value": "fuga"})
+
+        want = {"statusCode": 200, "body": '{"message": "get pathParameter"}'}
+        got = route.get_result()
+        self.assertEqual(want, got)
+
+        def params(params: list) -> dict:
+            if params["id"] == "hoge" and params["key"] == "fuga":
+                return {"message": "get pathParameters"}
+            return {"message": "nothing"}
+
+        route.add(path="params", func=params)
+        route.run(path="params", params={"id": "hoge", "value": "piyo", "key": "fuga"})
+
+        want = {"statusCode": 200, "body": '{"message": "get pathParameters"}'}
+        got = route.get_result()
+        self.assertEqual(want, got)
+
 
 if __name__ == "__main__":
     unittest.main()
