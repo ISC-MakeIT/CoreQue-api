@@ -6,29 +6,25 @@ class Route:
         self.__handlers = handlers
         self.__writer = writer
 
-    def add(self, path: str, func: callable, key: str = None) -> None:
-        if key is not None:
-            self.__handlers[path] = {"key": key, "func": func}
-        else:
-            self.__handlers[path] = {"key": None, "func": func}
+    def add(self, path: str, func: callable) -> None:
+        self.__handlers[path] = func
 
     def has_path(self, path: str) -> bool:
         return path in self.__handlers
 
-    def run(self, path: str, param: dict = None) -> bool:
+    def run(self, path: str, params: dict = None) -> bool:
         if not self.has_path(path):
             return False
-        if param is None:
+        if params is None:
             if self.__writer is None:
-                self.__handlers[path]["func"]()
+                self.__handlers[path]()
                 return True
-            self.__writer.body_write(self.__handlers[path]["func"]())
+            self.__writer.body_write(self.__handlers[path]())
         else:
-            key = self.__handlers[path]["key"]
             if self.__writer is None:
-                self.__handlers[path]["func"](param[key])
+                self.__handlers[path](params)
                 return True
-            self.__writer.body_write(self.__handlers[path]["func"](param[key]))
+            self.__writer.body_write(self.__handlers[path](params))
         return True
 
     def get_result(self) -> dict:
