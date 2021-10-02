@@ -25,7 +25,14 @@ class TestWriter(unittest.TestCase):
         got = self.writer.get_response()
         self.assertEqual(want, got)
 
-        body = {"message": "test"}
+        want = {"statusCode": 200, "body": '{"message": "dict to str"}'}
+        body = {"message": "dict to str"}
+        self.writer.body_write(body=body)
+        got = self.writer.get_response()
+        self.assertEqual(want, got)
+
+        want = {"statusCode": 200, "body": '[{"message": "list to str"}]'}
+        body = [{"message": "list to str"}]
         self.writer.body_write(body=body)
         got = self.writer.get_response()
         self.assertEqual(want, got)
