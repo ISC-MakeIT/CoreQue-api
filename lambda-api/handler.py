@@ -6,23 +6,68 @@ from boto3.dynamodb.conditions import Key
 from pprint import pprint
 import json
 
+from route import Route
+from writer import Writer
 
-def get_meal(dynamodb=None):
-    if not dynamodb:
-        dynamodb = boto3.resource("dynamodb")
+from decimal import Decimal
+
+
+def decimal_default_proc(obj):
+    if isinstance(obj, Decimal):
+        return float(obj)
+    raise TypeError
+
+
+placehold_dir_path = "./json/placehold/"
+convenience_json_path = placehold_dir_path + "convenience.json"
+file_not_found_error_json = {"statusCode": 404, "body": "File Not Found"}
+item_not_found_error_json = {"statusCode": 404, "body": "Item Not Found"}
+
+dynamodb = boto3.resource("dynamodb", region_name="ap-northeast-1")
+
+
+def convenience() -> dict:
+    try:
+        with open(convenience_json_path, "r") as f:
+            data = json.load(f)
+            return data
+    except FileNotFoundError:
+        return file_not_found_error_json
+
+
+def onigiri() -> list:
     table = dynamodb.Table("Meal")
 
     response = table.query(
         IndexName="MealClassifyIndex",
-        KeyConditionExpression=Key("Classification").eq("riceball"),
+        KeyConditionExpression=Key("Classification").eq("onigiri"),
     )
     return response["Items"]
 
 
+def item(params: list) -> list:
+    table = dynamodb.Table("Meal")
+
+    response = table.get_item(
+        Key={"Id": params["Id"], "Classification": params["Classification"]}
+    )
+    return json.dumps(response["Item"], default=decimal_default_proc)
+
+
+writer = Writer()
+route = Route(writer=writer)
+route.add(path="convenience", func=convenience)
+route.add(path="onigiri", func=onigiri)
+route.add(path="item", func=item)
+
+
 def lambda_handler(event, context):
-    meal = get_meal()
-    if meal:
-        print("取得完了")
-        pprint(meal, sort_dicts=False)
-    meal.append(event["pathParameters"])
-    return {"statusCode": 200, "body": json.dumps(meal, indent=2)}
+    if "queryStringParameters" in event:
+        route.run(
+            path=event["pathParameters"]["proxy"],
+            params=event["queryStringParameters"],
+        )
+    else:
+        route.run(path=event["pathParameters"]["proxy"])
+    resp = route.get_result()
+    return resp

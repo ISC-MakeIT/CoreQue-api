@@ -1,0 +1,54 @@
+{
+  "Id": {
+    "S": "6e4dcc2f-45b0-4b6e-9613-e00583d4040a"
+  },
+  "Classification": {
+    "S": "riceball"
+  },
+  "Calorie": {
+    "N": "3"
+  },
+  "Carbohydrate": {
+    "N": "37"
+  },
+  "Sodium": {
+    "N": "113"
+  },
+  "Fat": {
+    "N": "3"
+  },
+  "details": {
+    "M": {
+      "Calorie": {
+        "N": "3"
+      },
+      "Sodium": {
+        "N": "113"
+      },
+      "Classification": {
+        "S": "riceball"
+      },
+      "Fat": {
+        "N": "3"
+      },
+      "Carbohydrate": {
+        "N": "37"
+      },
+      "Timestamp": {
+        "S": "2021-09-11 03:36:46.376010+09:00"
+      },
+      "Protein": {
+        "N": "4"
+      },
+      "Name": {
+        "S": "tunamayo"
+      }
+    }
+  },
+  "Protein": {
+    "N": "4"
+  },
+  "Name": {
+    "S": "tunamayo"
+  }
+}

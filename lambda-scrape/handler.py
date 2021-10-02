@@ -11,68 +11,49 @@ import uuid
 import datetime
 from pytz import timezone
 import requests
+from model import *
+
+
+baseURLs = [
+    {"url": "https://www.sej.co.jp/products/a/sandwich/", "classification": "sandwich"},
+    {"url": "https://www.sej.co.jp/products/a/onigiri/", "classification": "onigiri"},
+    {"url": "https://www.sej.co.jp/products/a/bento/", "classification": "bento"},
+    {"url": "https://www.sej.co.jp/products/a/bread/", "classification": "bread"},
+]
 
 table_name = "Meal"
+bucket_name = "meal-image-bucket"
 
-dynamodb = boto3.resource("dynamodb")
+dynamodb = boto3.resource("dynamodb", region_name="ap-northeast-1")
+s3 = boto3.client("s3", region_name="ap-northeast-1")
+
 table = dynamodb.Table(table_name)
 
 
-def put_meal(id):
-    return table.put_item(
-        Item={
-            "Id": id,
-            "Classification": "riceball",
-            "Name": "tunamayo",
-            "Calorie": 3,
-            "Carbohydrate": 37,
-            "Fat": 3,
-            "Protein": 4,
-            "Sodium": 113,
-            "details": {
-                "Name": "Rice Ball",
-                "Classification": "riceball",
-                "Name": "tunamayo",
-                "Calorie": 3,
-                "Carbohydrate": 37,
-                "Fat": 3,
-                "Protein": 4,
-                "Sodium": 113,
-                "Timestamp": str(datetime.datetime.now(timezone("Asia/Tokyo"))),
-            },
-        }
-    )
-
-
-def upload_file(file_name, bucket, object_name=None):
-    """Upload a file to an S3 bucket
-
-    :param file_name: File to upload
-    :param bucket: Bucket to upload to
-    :param object_name: S3 object name. If not specified then file_name is used
-    :return: True if file was uploaded, else False
-    """
-
-    # If S3 object_name was not specified, use file_name
-    if object_name is None:
-        object_name = file_name
-
-    # Upload the file
-    s3 = boto3.client("s3")
-    try:
-        s3.put_object(
-            Bucket="meal-image-bucket",
-            Key=file_name+".png",
-            Body=requests.get("http://placehold.jp/150x150.png").content,
-        )
-    except ClientError as e:
-        logging.error(e)
-        return False
-    return True
-
-
 def lambda_handler(event, context):
-    meal_id = str(uuid.uuid4())
-    resp = put_meal(meal_id)
-    upload_file(meal_id, "meal-image-bucket")
+    resp = []
+    for baseURL in baseURLs:
+        print(baseURL)
+        html = requests.get(baseURL["url"]).content
+        item_urls = get_url_hand_over(html)
+
+        seven_url_prefix = "https://www.sej.co.jp{}"
+
+        for item_url in item_urls:
+            seven_url_suffix = item_url[0]
+            url = seven_url_prefix.format(seven_url_suffix)
+            timestamp = str(datetime.datetime.now(timezone("Asia/Tokyo")))
+            id = str(uuid.uuid4())
+            classification = baseURL["classification"]
+
+            item = get_nutrition(url, id, classification, timestamp)
+            resp = dynamodb_poi(item, table_name, dynamodb)
+            if 200 != resp["ResponseMetadata"]["HTTPStatusCode"]:
+                return {"statusCode": 500, "body": "Internal server error 1"}
+
+            content = requests.get(item_url[1]).content
+            resp = s3_poi(id, content, bucket_name, s3)
+            if 200 != resp["ResponseMetadata"]["HTTPStatusCode"]:
+                return {"statusCode": 500, "body": "Internal server error 2"}
+
     return {"statusCode": 200, "body": json.dumps(resp)}
