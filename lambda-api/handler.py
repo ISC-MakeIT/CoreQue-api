@@ -24,6 +24,7 @@ file_not_found_error_json = {"statusCode": 404, "body": "File Not Found"}
 item_not_found_error_json = {"statusCode": 404, "body": "Item Not Found"}
 
 dynamodb = boto3.resource("dynamodb", region_name="ap-northeast-1")
+table = dynamodb.Table("Meal")
 
 
 def convenience() -> dict:
@@ -35,12 +36,34 @@ def convenience() -> dict:
         return file_not_found_error_json
 
 
-def onigiri() -> list:
-    table = dynamodb.Table("Meal")
+def sandwich() -> list:
+    response = table.query(
+        IndexName="MealClassifyIndex",
+        KeyConditionExpression=Key("Classification").eq("sandwich"),
+    )
+    return response["Items"]
 
+
+def onigiri() -> list:
     response = table.query(
         IndexName="MealClassifyIndex",
         KeyConditionExpression=Key("Classification").eq("onigiri"),
+    )
+    return response["Items"]
+
+
+def bento() -> list:
+    response = table.query(
+        IndexName="MealClassifyIndex",
+        KeyConditionExpression=Key("Classification").eq("bento"),
+    )
+    return response["Items"]
+
+
+def bread() -> list:
+    response = table.query(
+        IndexName="MealClassifyIndex",
+        KeyConditionExpression=Key("Classification").eq("bread"),
     )
     return response["Items"]
 
@@ -57,7 +80,9 @@ def item(params: list) -> list:
 writer = Writer()
 route = Route(writer=writer)
 route.add(path="convenience", func=convenience)
+route.add(path="sandwich", func=sandwich)
 route.add(path="onigiri", func=onigiri)
+
 route.add(path="item", func=item)
 
 
