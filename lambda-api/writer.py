@@ -10,8 +10,10 @@ class Writer:
             self.__response["statusCode"] = 200
         return self.__response
 
-    def body_write(self, body: str or dict) -> None:
+    def body_write(self, body: str or list or dict) -> None:
         if type(body) is dict:
+            self.__response["body"] = json.dumps(obj=body)
+        elif type(body) is list:
             self.__response["body"] = json.dumps(obj=body)
         else:
             self.__response["body"] = body
