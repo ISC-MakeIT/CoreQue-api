@@ -26,7 +26,7 @@ def convenience() -> dict:
         return file_not_found_error_json
 
 
-def onigiri() -> dict:
+def onigiri() -> list:
     table = dynamodb.Table("Meal")
 
     response = table.query(
