@@ -80,8 +80,11 @@ def item(params: list) -> list:
 writer = Writer()
 route = Route(writer=writer)
 route.add(path="convenience", func=convenience)
+
 route.add(path="sandwich", func=sandwich)
 route.add(path="onigiri", func=onigiri)
+route.add(path="bento", func=bento)
+route.add(path="bread", func=bread)
 
 route.add(path="item", func=item)
 
