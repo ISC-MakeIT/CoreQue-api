@@ -11,7 +11,7 @@ from writer import Writer
 
 from decimal import Decimal
 
-
+# 型を変換するやつ
 def decimal_default_proc(obj):
     if isinstance(obj, Decimal):
         return float(obj)
@@ -68,27 +68,36 @@ def bread() -> list:
     return response["Items"]
 
 
-def item(params: list) -> list:
-    table = dynamodb.Table("Meal")
+def shortage(params: list) -> list:
+    calorie = params["Calorie"]
+    protein = params["Protein"]
+    fat = params["Fat"]
+    carbohydrate = params["Carbohydrate"]
+    fibre = params["Fibre"]
+    # TODO: 不足している栄養を補うような商品を返す
+    # 割合で一番必要そうな栄養素を基準に？
 
-    response = table.get_item(
-        Key={"Id": params["Id"], "Classification": params["Classification"]}
-    )
+
+def item(params: list) -> list:
+    id = params["Id"]
+    classification = params["Classification"]
+    response = table.get_item(Key={"Id": id, "Classification": classification})
     return json.dumps(response["Item"], default=decimal_default_proc)
 
 
 writer = Writer()
 route = Route(writer=writer)
+# 仮でおいてあるやつ
 route.add(path="convenience", func=convenience)
-
+# 実際に取得したやつ
 route.add(path="sandwich", func=sandwich)
 route.add(path="onigiri", func=onigiri)
 route.add(path="bento", func=bento)
 route.add(path="bread", func=bread)
-
+# 詳細取得するやつ
 route.add(path="item", func=item)
 
-
+# 起点
 def lambda_handler(event, context):
     if "queryStringParameters" in event:
         route.run(
