@@ -2,7 +2,7 @@ import sys
 
 sys.path.insert(0, "package/")
 import boto3
-from boto3.dynamodb.conditions import Key
+from boto3.dynamodb.conditions import Attr, Contains, Key
 from pprint import pprint
 import json
 
@@ -78,6 +78,18 @@ def shortage(params: list) -> list:
     # 割合で一番必要そうな栄養素を基準に？
 
 
+def search(params: list) -> list:
+    # とりま単語のみの場合
+    # TODO: 複数検索に対応させる
+    keyword = params["Keyword"]
+    response = table.scan(
+        FilterExpression=Attr("Name").contains(keyword),
+        ProjectionExpression="#name, Id, Classification",
+        ExpressionAttributeNames={"#name": "Name"},
+    )
+    return response["Items"]
+
+
 def item(params: list) -> list:
     id = params["Id"]
     classification = params["Classification"]
@@ -94,6 +106,7 @@ route.add(path="sandwich", func=sandwich)
 route.add(path="onigiri", func=onigiri)
 route.add(path="bento", func=bento)
 route.add(path="bread", func=bread)
+route.add(path="search", func=search)
 # 詳細取得するやつ
 route.add(path="item", func=item)
 
