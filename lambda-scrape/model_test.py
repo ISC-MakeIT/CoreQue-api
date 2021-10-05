@@ -120,14 +120,13 @@ class TestModel(unittest.TestCase):
             },
         }
 
-        id = "hogefuga"
-
-        got = get_nutrition(url, id, classification, timestamp)
+        # FIXME: ハッシュ値をIDとする
+        got = get_nutrition(url, classification, timestamp)
         self.assertEqual(want, got)
 
         want = {}
         url = "https://www.sej.co.jp/products/a/item/290145/"
-        got = get_nutrition(url, id, classification, timestamp)
+        got = get_nutrition(url, classification, timestamp)
         self.assertEqual(want, got)
 
     @mock_dynamodb2

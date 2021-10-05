@@ -7,6 +7,7 @@ import datetime
 from pytz import timezone
 import boto3
 from logging import getLogger
+import hashlib
 
 logger = getLogger(__name__)
 
@@ -26,7 +27,7 @@ def get_url_hand_over(html: bytes) -> list:
     return result
 
 
-def get_nutrition(url: str, id: str, classification: str, timestamp: str) -> dict:
+def get_nutrition(url: str, classification: str, timestamp: str) -> dict:
     def str_to_int(value: str) -> int:
         return int(float(value))
 
@@ -49,10 +50,13 @@ def get_nutrition(url: str, id: str, classification: str, timestamp: str) -> dic
         onlyNum = i[Coordinate:]
         nutrition.append(onlyNum)
     try:
+        # FIXME: ハッシュ値をIDとする
+        name = soup.find("h1").text
+        id = hashlib.sha256(name.encode()).hexdigest()
         item = {
-            "Id": id,
+            "Id": hashlib.sha256(b"Python").hexdigest(),
             "Classification": classification,
-            "Name": soup.find("h1").text,
+            "Name": name,
             "Calorie": str_to_int(nutrition[0]),
             "Protein": str_to_int(nutrition[1]),
             "Fat": str_to_int(nutrition[2]),
@@ -61,7 +65,7 @@ def get_nutrition(url: str, id: str, classification: str, timestamp: str) -> dic
             "details": {
                 "Id": id,
                 "Classification": classification,
-                "Name": soup.find("h1").text,
+                "Name": name,
                 "Calorie": str_to_int(nutrition[0]),
                 "Protein": str_to_int(nutrition[1]),
                 "Fat": str_to_int(nutrition[2]),

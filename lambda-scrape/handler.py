@@ -11,6 +11,7 @@ import uuid
 import datetime
 from pytz import timezone
 import requests
+import hashlib
 from model import *
 
 
@@ -43,7 +44,7 @@ def lambda_handler(event, context):
             seven_url_suffix = item_url[0]
             url = seven_url_prefix.format(seven_url_suffix)
             timestamp = str(datetime.datetime.now(timezone("Asia/Tokyo")))
-            id = str(uuid.uuid4())
+            # TODO: あたらしくuuidを生成するとdynamodb内で重複する
             classification = baseURL["classification"]
 
             item = get_nutrition(url, id, classification, timestamp)
