@@ -93,41 +93,38 @@ class TestModel(unittest.TestCase):
         熱量：456kcal、たんぱく質：17.6g、脂質：27.7g、炭水化物：34.6g（糖質：33.3g、食物繊維：1.3g）、食塩相当量：2.5g
         """
         timestamp = str(datetime.datetime.now(timezone("Asia/Tokyo")))
-        seven_url_prefix = "https://www.sej.co.jp{}"
-        item_url_suffix = "/products/a/item/050922/"
-        url = seven_url_prefix.format(item_url_suffix)
         classification = "sandwich"
 
         want = {
-            "Id": "hogefuga",
+            "Id": "b8c89b974700464208be283257b0b6702085936811545fe2b5ab74a8644acfb2",
             "Classification": "sandwich",
-            "Name": "玉子焼き＆海老カツサンド",
-            "Calorie": 456,
-            "Protein": 17,
-            "Fat": 27,
-            "Carbohydrate": 34,
+            "Name": "照焼チキンとたまごのサンド",
+            "Calorie": 424,
+            "Protein": 19,
+            "Fat": 25,
+            "Carbohydrate": 29,
             "Fibre": 1,
             "details": {
-                "Id": "hogefuga",
+                "Id": "b8c89b974700464208be283257b0b6702085936811545fe2b5ab74a8644acfb2",
                 "Classification": "sandwich",
-                "Name": "玉子焼き＆海老カツサンド",
-                "Calorie": 456,
-                "Protein": 17,
-                "Fat": 27,
-                "Carbohydrate": 34,
+                "Name": "照焼チキンとたまごのサンド",
+                "Calorie": 424,
+                "Protein": 19,
+                "Fat": 25,
+                "Carbohydrate": 29,
                 "Fibre": 1,
                 "Timestamp": timestamp,
             },
         }
 
-        id = "hogefuga"
-
-        got = get_nutrition(url, id, classification, timestamp)
+        with open("mock/teriyaki.txt", "r") as f:
+            data = f.read()
+        html = data
+        got = get_nutrition(html, classification, timestamp)
         self.assertEqual(want, got)
 
         want = {}
-        url = "https://www.sej.co.jp/products/a/item/290145/"
-        got = get_nutrition(url, id, classification, timestamp)
+        got = get_nutrition("", classification, timestamp)
         self.assertEqual(want, got)
 
     @mock_dynamodb2
