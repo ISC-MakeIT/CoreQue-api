@@ -124,6 +124,7 @@ resource "aws_dynamodb_table" "basic-dynamodb-table" {
     name = "Price"
     type = "N"
   }
+
   attribute {
     name = "Calorie"
     type = "N"
@@ -244,6 +245,16 @@ resource "aws_dynamodb_table" "basic-dynamodb-table" {
     read_capacity      = 10
     projection_type    = "INCLUDE"
     non_key_attributes = ["Id", "Classification", "Name", "Price"]
+  }
+
+  global_secondary_index {
+    name               = "StatusPriceGSI"
+    hash_key           = "Status"
+    range_key          = "Price"
+    write_capacity     = 10
+    read_capacity      = 10
+    projection_type    = "INCLUDE"
+    non_key_attributes = ["Id", "Classification", "Name"]
   }
 
   tags = {
