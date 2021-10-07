@@ -12,15 +12,53 @@ import datetime
 from pytz import timezone
 import requests
 import hashlib
+import time
 from model import *
 
 
-baseURLs = [
-    {"url": "https://www.sej.co.jp/products/a/sandwich/", "classification": "sandwich"},
-    {"url": "https://www.sej.co.jp/products/a/onigiri/", "classification": "onigiri"},
-    {"url": "https://www.sej.co.jp/products/a/bento/", "classification": "bento"},
-    {"url": "https://www.sej.co.jp/products/a/bread/", "classification": "bread"},
-]
+baseURLs = [{
+    "url": "https://www.sej.co.jp/products/a/sandwich/",
+    "classification": "sandwich"
+}, {
+    "url": "https://www.sej.co.jp/products/a/onigiri/",
+    "classification": "onigiri"
+}, {
+    "url": "https://www.sej.co.jp/products/a/bento/",
+    "classification": "bento"
+}, {
+    "url": "https://www.sej.co.jp/products/a/bread/",
+    "classification": "bread"
+}, {
+    "url": "https://www.sej.co.jp/products/a/men/",
+    "classification": "men"
+}, {
+    "url": "https://www.sej.co.jp/products/a/pasta/",
+    "classification": "pasta"
+}, {
+    "url": "https://www.sej.co.jp/products/a/gratin/ ",
+    "classification": "gratin"
+}, {
+    "url": "https://www.sej.co.jp/products/a/dailydish/",
+    "classification": "dailydish"
+}, {
+    "url": "https://www.sej.co.jp/products/a/salad/",
+    "classification": "salad"
+}, {
+    "url": "https://www.sej.co.jp/products/a/sweets/",
+    "classification": "sweets"
+}, {
+    "url": "https://www.sej.co.jp/products/a/ice_cream/",
+    "classification": "ice_cream"
+}, {
+    "url": "https://www.sej.co.jp/products/a/hotsnack/",
+    "classification": "hotsnack"
+}, {
+    "url": "https://www.sej.co.jp/products/a/oden/",
+    "classification": "oden"
+}, {
+    "url": "https://www.sej.co.jp/products/a/chukaman/",
+    "classification": "chukaman"
+}]
 
 table_name = "Meal"
 bucket_name = "meal-image-bucket"
@@ -34,6 +72,7 @@ table = dynamodb.Table(table_name)
 def lambda_handler(event, context):
     resp = []
     for baseURL in baseURLs:
+        time.sleep(1)
         print(baseURL)
         html = requests.get(baseURL["url"]).content
         item_urls = get_url_hand_over(html)
@@ -41,6 +80,7 @@ def lambda_handler(event, context):
         seven_url_prefix = "https://www.sej.co.jp{}"
 
         for item_url in item_urls:
+            time.sleep(1)
             seven_url_suffix = item_url[0]
             image_url = item_url[1]
             url = seven_url_prefix.format(seven_url_suffix)
@@ -52,12 +92,18 @@ def lambda_handler(event, context):
             if item != {}:
                 resp = dynamodb_poi(item, table_name, dynamodb)
                 if 200 != resp["ResponseMetadata"]["HTTPStatusCode"]:
-                    return {"statusCode": 500, "body": "Internal server error 1"}
+                    return {
+                        "statusCode": 500,
+                        "body": "Internal server error 1"
+                    }
 
                 content = requests.get(image_url).content
                 file_name = item["Id"]
                 resp = s3_poi(file_name, content, bucket_name, s3)
                 if 200 != resp["ResponseMetadata"]["HTTPStatusCode"]:
-                    return {"statusCode": 500, "body": "Internal server error 2"}
+                    return {
+                        "statusCode": 500,
+                        "body": "Internal server error 2"
+                    }
 
     return {"statusCode": 200, "body": json.dumps(resp)}

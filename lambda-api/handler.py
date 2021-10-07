@@ -35,7 +35,6 @@ def convenience() -> dict:
     except FileNotFoundError:
         return file_not_found_error_json
 
-
 def sandwich() -> list:
     response = table.query(
         IndexName="MealClassifyIndex",
