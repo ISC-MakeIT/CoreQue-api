@@ -23,11 +23,15 @@ def get_url_hand_over(html: bytes) -> list:
         url = link.get("href")
         img = link.find("img")
         img_url = img.get("data-original")
-        result.append([url, img_url])
+        price = soup.find_all("div", class_="item_price")[i].find("p").text
+        price = price.split("円")[0]
+        price = int(price)
+        result.append([url, img_url, price])
     return result
 
 
-def get_nutrition(html: bytes, classification: str, timestamp: str) -> dict:
+def get_nutrition(html: bytes, price: int, classification: str,
+                  timestamp: str) -> dict:
     def str_to_int(value: str) -> int:
         return int(float(value))
 
@@ -54,6 +58,7 @@ def get_nutrition(html: bytes, classification: str, timestamp: str) -> dict:
             "Classification": classification,
             "Status": "exist",
             "Name": name,
+            "Price": price,
             "Calorie": str_to_int(nutrition[0]),
             "Protein": str_to_int(nutrition[1]),
             "Fat": str_to_int(nutrition[2]),
@@ -63,6 +68,7 @@ def get_nutrition(html: bytes, classification: str, timestamp: str) -> dict:
                 "Id": id,
                 "Classification": classification,
                 "Name": name,
+                "Price": price,
                 "Calorie": str_to_int(nutrition[0]),
                 "Protein": str_to_int(nutrition[1]),
                 "Fat": str_to_int(nutrition[2]),

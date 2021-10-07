@@ -32,6 +32,6 @@ output "endpoint_url" {
 
 output "s3_domain_name" {
   description = "Domain name for S3 bucket."
-  
+
   value = aws_s3_bucket.b.bucket_domain_name
 }

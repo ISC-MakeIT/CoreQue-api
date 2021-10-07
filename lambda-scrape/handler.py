@@ -15,7 +15,6 @@ import hashlib
 import time
 from model import *
 
-
 baseURLs = [{
     "url": "https://www.sej.co.jp/products/a/sandwich/",
     "classification": "sandwich"
@@ -87,8 +86,8 @@ def lambda_handler(event, context):
             timestamp = str(datetime.datetime.now(timezone("Asia/Tokyo")))
             classification = baseURL["classification"]
             html = requests.get(url).content
-
-            item = get_nutrition(html, classification, timestamp)
+            price = item_url[2]
+            item = get_nutrition(html, price, classification, timestamp)
             if item != {}:
                 resp = dynamodb_poi(item, table_name, dynamodb)
                 if 200 != resp["ResponseMetadata"]["HTTPStatusCode"]:
