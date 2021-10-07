@@ -84,7 +84,7 @@ def search(params: list) -> list:
     keyword = params["Keyword"]
     response = table.scan(
         FilterExpression=Attr("Name").contains(keyword),
-        ProjectionExpression="#name, Id, Classification",
+        ProjectionExpression="#name, Id, Classification, Price",
         ExpressionAttributeNames={"#name": "Name"},
     )
     return response["Items"]
