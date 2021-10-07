@@ -12,7 +12,9 @@ import datetime
 from pytz import timezone
 import requests
 import hashlib
+import time
 from model import *
+
 
 baseURLs = [{
     "url": "https://www.sej.co.jp/products/a/sandwich/",
@@ -70,6 +72,7 @@ table = dynamodb.Table(table_name)
 def lambda_handler(event, context):
     resp = []
     for baseURL in baseURLs:
+        time.sleep(1)
         print(baseURL)
         html = requests.get(baseURL["url"]).content
         item_urls = get_url_hand_over(html)
@@ -77,6 +80,7 @@ def lambda_handler(event, context):
         seven_url_prefix = "https://www.sej.co.jp{}"
 
         for item_url in item_urls:
+            time.sleep(1)
             seven_url_suffix = item_url[0]
             image_url = item_url[1]
             url = seven_url_prefix.format(seven_url_suffix)
