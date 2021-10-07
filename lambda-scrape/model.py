@@ -7,6 +7,7 @@ import datetime
 from pytz import timezone
 import boto3
 from logging import getLogger
+import hashlib
 
 logger = getLogger(__name__)
 
@@ -26,33 +27,33 @@ def get_url_hand_over(html: bytes) -> list:
     return result
 
 
-def get_nutrition(url: str, id: str, classification: str, timestamp: str) -> dict:
+def get_nutrition(html: bytes, classification: str, timestamp: str) -> dict:
     def str_to_int(value: str) -> int:
         return int(float(value))
 
-    res = requests.get(url)
-    if res.status_code != 200:
-        return False
-    soup = BeautifulSoup(res.content, "html.parser")
-
-    td = soup.find_all("td")
-    nutrient_component = td[1].text
-
-    nutrition = []
-    column = re.sub(r"[g|kcal]", ",", nutrient_component)
-    b = re.split(r"（|）|kcal |、", column)
-    d = ",".join(b)
-    c = d.split("," "")
-    strandint = list(filter(None, c))
-    for i in strandint:
-        Coordinate = i.find("：") + 1
-        onlyNum = i[Coordinate:]
-        nutrition.append(onlyNum)
+    soup = BeautifulSoup(html, "html.parser")
     try:
+        td = soup.find_all("td")
+        nutrient_component = td[1].text
+
+        nutrition = []
+        column = re.sub(r"[g|kcal]", ",", nutrient_component)
+        b = re.split(r"（|）|kcal |、", column)
+        d = ",".join(b)
+        c = d.split("," "")
+        strandint = list(filter(None, c))
+        for i in strandint:
+            Coordinate = i.find("：") + 1
+            onlyNum = i[Coordinate:]
+            nutrition.append(onlyNum)
+
+        name = soup.find("h1").text
+        id = hashlib.sha256(name.encode("utf-8")).hexdigest()
         item = {
             "Id": id,
             "Classification": classification,
-            "Name": soup.find("h1").text,
+            "Status": "exist",
+            "Name": name,
             "Calorie": str_to_int(nutrition[0]),
             "Protein": str_to_int(nutrition[1]),
             "Fat": str_to_int(nutrition[2]),
@@ -61,7 +62,7 @@ def get_nutrition(url: str, id: str, classification: str, timestamp: str) -> dic
             "details": {
                 "Id": id,
                 "Classification": classification,
-                "Name": soup.find("h1").text,
+                "Name": name,
                 "Calorie": str_to_int(nutrition[0]),
                 "Protein": str_to_int(nutrition[1]),
                 "Fat": str_to_int(nutrition[2]),
