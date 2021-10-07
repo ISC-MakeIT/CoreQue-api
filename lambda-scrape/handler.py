@@ -45,7 +45,6 @@ def lambda_handler(event, context):
             image_url = item_url[1]
             url = seven_url_prefix.format(seven_url_suffix)
             timestamp = str(datetime.datetime.now(timezone("Asia/Tokyo")))
-            # TODO: あたらしくuuidを生成するとdynamodb内で重複する
             classification = baseURL["classification"]
             html = requests.get(url).content
 

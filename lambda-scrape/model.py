@@ -47,7 +47,6 @@ def get_nutrition(html: bytes, classification: str, timestamp: str) -> dict:
             onlyNum = i[Coordinate:]
             nutrition.append(onlyNum)
 
-        # FIXME: ハッシュ値をIDとする
         name = soup.find("h1").text
         id = hashlib.sha256(name.encode("utf-8")).hexdigest()
         item = {

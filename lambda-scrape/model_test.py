@@ -117,7 +117,6 @@ class TestModel(unittest.TestCase):
             },
         }
 
-        # FIXME: ハッシュ値をIDとする
         with open("mock/teriyaki.txt", "r") as f:
             data = f.read()
         html = data
