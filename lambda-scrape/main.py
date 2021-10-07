@@ -23,10 +23,10 @@ def main():
 
             for suffix in item_urls:
                 url = seven_url_prefix.format(suffix[0])
+                html = requests.get(url).content
                 timestamp = str(datetime.datetime.now(timezone("Asia/Tokyo")))
-                id = str(uuid.uuid4())
                 classification = baseURL["classification"]
-                resp.append(get_nutrition(url, id, classification, timestamp))
+                resp.append(get_nutrition(html, classification, timestamp))
         pprint.pprint(resp)
     except Exception as e:
         print(resp)
