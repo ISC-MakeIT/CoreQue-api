@@ -11,6 +11,7 @@ from writer import Writer
 
 from decimal import Decimal
 
+
 # 型を変換するやつ
 def decimal_default_proc(obj):
     if isinstance(obj, Decimal):
@@ -34,6 +35,7 @@ def convenience() -> dict:
             return data
     except FileNotFoundError:
         return file_not_found_error_json
+
 
 def sandwich() -> list:
     response = table.query(
@@ -66,6 +68,75 @@ def bread() -> list:
     )
     return response["Items"]
 
+def men() -> list:
+    response = table.query(
+        IndexName="MealClassifyIndex",
+        KeyConditionExpression=Key("Classification").eq("men"),
+    )
+    return response["Items"]
+
+def pasta() -> list:
+    response = table.query(
+        IndexName="MealClassifyIndex",
+        KeyConditionExpression=Key("Classification").eq("pasta"),
+    )
+    return response["Items"]
+
+def gratin() -> list:
+    response = table.query(
+        IndexName="MealClassifyIndex",
+        KeyConditionExpression=Key("Classification").eq("gratin"),
+    )
+    return response["Items"]
+
+def dailydish() -> list:
+    response = table.query(
+        IndexName="MealClassifyIndex",
+        KeyConditionExpression=Key("Classification").eq("dailydish"),
+    )
+    return response["Items"]
+
+def salad() -> list:
+    response = table.query(
+        IndexName="MealClassifyIndex",
+        KeyConditionExpression=Key("Classification").eq("salad"),
+    )
+    return response["Items"]
+
+def sweets() -> list:
+    response = table.query(
+        IndexName="MealClassifyIndex",
+        KeyConditionExpression=Key("Classification").eq("sweets"),
+    )
+    return response["Items"]
+
+def ice_cream() -> list:
+    response = table.query(
+        IndexName="MealClassifyIndex",
+        KeyConditionExpression=Key("Classification").eq("ice_cream"),
+    )
+    return response["Items"]
+
+def hotsnack() -> list:
+    response = table.query(
+        IndexName="MealClassifyIndex",
+        KeyConditionExpression=Key("Classification").eq("hotsnack"),
+    )
+    return response["Items"]
+
+def oden() -> list:
+    response = table.query(
+        IndexName="MealClassifyIndex",
+        KeyConditionExpression=Key("Classification").eq("oden"),
+    )
+    return response["Items"]
+
+def chukaman() -> list:
+    response = table.query(
+        IndexName="MealClassifyIndex",
+        KeyConditionExpression=Key("Classification").eq("chukaman"),
+    )
+    return response["Items"]
 
 def shortage(params: list) -> list:
     nutrition = params["Nutrition"]
@@ -106,10 +177,21 @@ route.add(path="sandwich", func=sandwich)
 route.add(path="onigiri", func=onigiri)
 route.add(path="bento", func=bento)
 route.add(path="bread", func=bread)
+route.add(path="men",func=men)
+route.add(path="pasta",func=pasta)
+route.add(path="gratin",func=gratin)
+route.add(path="dailydish",func=dailydish)
+route.add(path="salad",func=salad)
+route.add(path="sweets",func=sweets)
+route.add(path="ice_cream",func=ice_cream)
+route.add(path="hotsnack",func=hotsnack)
+route.add(path="oden",func=oden)
+route.add(path="chukaman",func=chukaman)
 route.add(path="search", func=search)
 route.add(path="shortage", func=shortage)
 # 詳細取得するやつ
 route.add(path="item", func=item)
+
 
 # 起点
 def lambda_handler(event, context):
