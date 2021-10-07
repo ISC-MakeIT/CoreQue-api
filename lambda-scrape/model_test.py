@@ -98,6 +98,7 @@ class TestModel(unittest.TestCase):
         want = {
             "Id": "b8c89b974700464208be283257b0b6702085936811545fe2b5ab74a8644acfb2",
             "Classification": "sandwich",
+            "Status" : "exist",
             "Name": "照焼チキンとたまごのサンド",
             "Calorie": 424,
             "Protein": 19,

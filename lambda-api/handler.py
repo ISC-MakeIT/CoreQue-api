@@ -69,13 +69,14 @@ def bread() -> list:
 
 
 def shortage(params: list) -> list:
-    calorie = params["Calorie"]
-    protein = params["Protein"]
-    fat = params["Fat"]
-    carbohydrate = params["Carbohydrate"]
-    fibre = params["Fibre"]
-    # TODO: 不足している栄養を補うような商品を返す
-    # 割合で一番必要そうな栄養素を基準に？
+    nutrition = params["Nutrition"]
+    index = "Status" + nutrition + "GSI"
+    response = table.query(
+        IndexName=index,
+        KeyConditionExpression=Key("Status").eq("exist"),
+        ScanIndexForward=False,
+    )
+    return json.dumps(response["Items"], default=decimal_default_proc)
 
 
 def search(params: list) -> list:
@@ -107,6 +108,7 @@ route.add(path="onigiri", func=onigiri)
 route.add(path="bento", func=bento)
 route.add(path="bread", func=bread)
 route.add(path="search", func=search)
+route.add(path="shortage", func=shortage)
 # 詳細取得するやつ
 route.add(path="item", func=item)
 

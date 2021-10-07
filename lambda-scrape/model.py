@@ -52,6 +52,7 @@ def get_nutrition(html: bytes, classification: str, timestamp: str) -> dict:
         item = {
             "Id": id,
             "Classification": classification,
+            "Status": "exist",
             "Name": name,
             "Calorie": str_to_int(nutrition[0]),
             "Protein": str_to_int(nutrition[1]),
