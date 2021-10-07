@@ -12,14 +12,20 @@ class Route:
     def has_path(self, path: str) -> bool:
         return path in self.__handlers
 
-    def run(self, path: str) -> bool:
-        if self.has_path(path):
-            if self.__writer is not None:
-                self.__writer.body_write(self.__handlers[path]())
-            else:
+    def run(self, path: str, params: dict = None) -> bool:
+        if not self.has_path(path):
+            return False
+        if params is None:
+            if self.__writer is None:
                 self.__handlers[path]()
-            return True
-        return False
+                return True
+            self.__writer.body_write(self.__handlers[path]())
+        else:
+            if self.__writer is None:
+                self.__handlers[path](params)
+                return True
+            self.__writer.body_write(self.__handlers[path](params))
+        return True
 
     def get_result(self) -> dict:
         return self.__writer.get_response()

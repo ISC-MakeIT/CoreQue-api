@@ -11,6 +11,7 @@ import uuid
 import datetime
 from pytz import timezone
 import requests
+import hashlib
 from model import *
 
 
@@ -41,19 +42,22 @@ def lambda_handler(event, context):
 
         for item_url in item_urls:
             seven_url_suffix = item_url[0]
+            image_url = item_url[1]
             url = seven_url_prefix.format(seven_url_suffix)
             timestamp = str(datetime.datetime.now(timezone("Asia/Tokyo")))
-            id = str(uuid.uuid4())
             classification = baseURL["classification"]
+            html = requests.get(url).content
 
-            item = get_nutrition(url, id, classification, timestamp)
-            resp = dynamodb_poi(item, table_name, dynamodb)
-            if 200 != resp["ResponseMetadata"]["HTTPStatusCode"]:
-                return {"statusCode": 500, "body": "Internal server error 1"}
+            item = get_nutrition(html, classification, timestamp)
+            if item != {}:
+                resp = dynamodb_poi(item, table_name, dynamodb)
+                if 200 != resp["ResponseMetadata"]["HTTPStatusCode"]:
+                    return {"statusCode": 500, "body": "Internal server error 1"}
 
-            content = requests.get(item_url[1]).content
-            resp = s3_poi(id, content, bucket_name, s3)
-            if 200 != resp["ResponseMetadata"]["HTTPStatusCode"]:
-                return {"statusCode": 500, "body": "Internal server error 2"}
+                content = requests.get(image_url).content
+                file_name = item["Id"]
+                resp = s3_poi(file_name, content, bucket_name, s3)
+                if 200 != resp["ResponseMetadata"]["HTTPStatusCode"]:
+                    return {"statusCode": 500, "body": "Internal server error 2"}
 
     return {"statusCode": 200, "body": json.dumps(resp)}
