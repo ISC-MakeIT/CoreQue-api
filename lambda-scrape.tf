@@ -111,6 +111,11 @@ resource "aws_dynamodb_table" "basic-dynamodb-table" {
   }
 
   attribute {
+    name = "Status"
+    type = "S"
+  }
+
+  attribute {
     name = "Name"
     type = "S"
   }
@@ -185,6 +190,56 @@ resource "aws_dynamodb_table" "basic-dynamodb-table" {
     read_capacity      = 10
     projection_type    = "INCLUDE"
     non_key_attributes = ["Id"]
+  }
+
+  global_secondary_index {
+    name               = "StatusCalorieGSI"
+    hash_key           = "Status"
+    range_key          = "Calorie"
+    write_capacity     = 10
+    read_capacity      = 10
+    projection_type    = "INCLUDE"
+    non_key_attributes = ["Id", "Classification", "Name"]
+  }
+
+  global_secondary_index {
+    name               = "StatusProteinGSI"
+    hash_key           = "Status"
+    range_key          = "Protein"
+    write_capacity     = 10
+    read_capacity      = 10
+    projection_type    = "INCLUDE"
+    non_key_attributes = ["Id", "Classification", "Name"]
+  }
+
+  global_secondary_index {
+    name               = "StatusFatGSI"
+    hash_key           = "Status"
+    range_key          = "Fat"
+    write_capacity     = 10
+    read_capacity      = 10
+    projection_type    = "INCLUDE"
+    non_key_attributes = ["Id", "Classification", "Name"]
+  }
+
+  global_secondary_index {
+    name               = "StatusCarbohydrateGSI"
+    hash_key           = "Status"
+    range_key          = "Carbohydrate"
+    write_capacity     = 10
+    read_capacity      = 10
+    projection_type    = "INCLUDE"
+    non_key_attributes = ["Id", "Classification", "Name"]
+  }
+
+  global_secondary_index {
+    name               = "StatusFibreGSI"
+    hash_key           = "Status"
+    range_key          = "Fibre"
+    write_capacity     = 10
+    read_capacity      = 10
+    projection_type    = "INCLUDE"
+    non_key_attributes = ["Id", "Classification", "Name"]
   }
 
   tags = {
