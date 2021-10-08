@@ -11,6 +11,7 @@ from writer import Writer
 
 from decimal import Decimal
 
+
 # 型を変換するやつ
 def decimal_default_proc(obj):
     if isinstance(obj, Decimal):
@@ -35,12 +36,13 @@ def convenience() -> dict:
     except FileNotFoundError:
         return file_not_found_error_json
 
+
 def sandwich() -> list:
     response = table.query(
         IndexName="MealClassifyIndex",
         KeyConditionExpression=Key("Classification").eq("sandwich"),
     )
-    return response["Items"]
+    return json.dumps(response["Items"], default=decimal_default_proc)
 
 
 def onigiri() -> list:
@@ -48,7 +50,7 @@ def onigiri() -> list:
         IndexName="MealClassifyIndex",
         KeyConditionExpression=Key("Classification").eq("onigiri"),
     )
-    return response["Items"]
+    return json.dumps(response["Items"], default=decimal_default_proc)
 
 
 def bento() -> list:
@@ -56,7 +58,7 @@ def bento() -> list:
         IndexName="MealClassifyIndex",
         KeyConditionExpression=Key("Classification").eq("bento"),
     )
-    return response["Items"]
+    return json.dumps(response["Items"], default=decimal_default_proc)
 
 
 def bread() -> list:
@@ -64,7 +66,87 @@ def bread() -> list:
         IndexName="MealClassifyIndex",
         KeyConditionExpression=Key("Classification").eq("bread"),
     )
-    return response["Items"]
+    return json.dumps(response["Items"], default=decimal_default_proc)
+
+
+def men() -> list:
+    response = table.query(
+        IndexName="MealClassifyIndex",
+        KeyConditionExpression=Key("Classification").eq("men"),
+    )
+    return json.dumps(response["Items"], default=decimal_default_proc)
+
+
+def pasta() -> list:
+    response = table.query(
+        IndexName="MealClassifyIndex",
+        KeyConditionExpression=Key("Classification").eq("pasta"),
+    )
+    return json.dumps(response["Items"], default=decimal_default_proc)
+
+
+def gratin() -> list:
+    response = table.query(
+        IndexName="MealClassifyIndex",
+        KeyConditionExpression=Key("Classification").eq("gratin"),
+    )
+    return json.dumps(response["Items"], default=decimal_default_proc)
+
+
+def dailydish() -> list:
+    response = table.query(
+        IndexName="MealClassifyIndex",
+        KeyConditionExpression=Key("Classification").eq("dailydish"),
+    )
+    return json.dumps(response["Items"], default=decimal_default_proc)
+
+
+def salad() -> list:
+    response = table.query(
+        IndexName="MealClassifyIndex",
+        KeyConditionExpression=Key("Classification").eq("salad"),
+    )
+    return json.dumps(response["Items"], default=decimal_default_proc)
+
+
+def sweets() -> list:
+    response = table.query(
+        IndexName="MealClassifyIndex",
+        KeyConditionExpression=Key("Classification").eq("sweets"),
+    )
+    return json.dumps(response["Items"], default=decimal_default_proc)
+
+
+def ice_cream() -> list:
+    response = table.query(
+        IndexName="MealClassifyIndex",
+        KeyConditionExpression=Key("Classification").eq("ice_cream"),
+    )
+    return json.dumps(response["Items"], default=decimal_default_proc)
+
+
+def hotsnack() -> list:
+    response = table.query(
+        IndexName="MealClassifyIndex",
+        KeyConditionExpression=Key("Classification").eq("hotsnack"),
+    )
+    return json.dumps(response["Items"], default=decimal_default_proc)
+
+
+def oden() -> list:
+    response = table.query(
+        IndexName="MealClassifyIndex",
+        KeyConditionExpression=Key("Classification").eq("oden"),
+    )
+    return json.dumps(response["Items"], default=decimal_default_proc)
+
+
+def chukaman() -> list:
+    response = table.query(
+        IndexName="MealClassifyIndex",
+        KeyConditionExpression=Key("Classification").eq("chukaman"),
+    )
+    return json.dumps(response["Items"], default=decimal_default_proc)
 
 
 def shortage(params: list) -> list:
@@ -84,10 +166,10 @@ def search(params: list) -> list:
     keyword = params["Keyword"]
     response = table.scan(
         FilterExpression=Attr("Name").contains(keyword),
-        ProjectionExpression="#name, Id, Classification",
+        ProjectionExpression="#name, Id, Classification, Price",
         ExpressionAttributeNames={"#name": "Name"},
     )
-    return response["Items"]
+    return json.dumps(response["Items"], default=decimal_default_proc)
 
 
 def item(params: list) -> list:
@@ -106,10 +188,21 @@ route.add(path="sandwich", func=sandwich)
 route.add(path="onigiri", func=onigiri)
 route.add(path="bento", func=bento)
 route.add(path="bread", func=bread)
+route.add(path="men", func=men)
+route.add(path="pasta", func=pasta)
+route.add(path="gratin", func=gratin)
+route.add(path="dailydish", func=dailydish)
+route.add(path="salad", func=salad)
+route.add(path="sweets", func=sweets)
+route.add(path="ice_cream", func=ice_cream)
+route.add(path="hotsnack", func=hotsnack)
+route.add(path="oden", func=oden)
+route.add(path="chukaman", func=chukaman)
 route.add(path="search", func=search)
 route.add(path="shortage", func=shortage)
 # 詳細取得するやつ
 route.add(path="item", func=item)
+
 
 # 起点
 def lambda_handler(event, context):
