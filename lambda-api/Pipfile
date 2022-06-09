@@ -4,16 +4,12 @@ verify_ssl = true
 name = "pypi"
 
 [scripts]
-test = 'python -m unittest discover -p "*_test.py" -v'
+test = "python -m unittest discover -p '*_test.py' -v "
 
 [packages]
 boto3 = "*"
-pytz = "*"
-requests = "*"
-bs4 = "*"
 
 [dev-packages]
-moto = {extras = ["all"], version = "*"}
 
 [requires]
 python_version = "3.8"
