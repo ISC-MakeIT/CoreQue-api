@@ -71,8 +71,8 @@ resource "aws_iam_role_policy" "lambda_scrape_role" {
 # スケジュールの作成
 resource "aws_cloudwatch_event_rule" "everyday" {
   name                = "coreque_scrape_everyday"
-  description         = "Fires everyday"
-  schedule_expression = "cron(0 10 * * ? *)"
+  description         = "Temporarily suspended"
+  schedule_expression = "cron(0 12 1 1 ? *)"
 }
 
 # イベントトリガーの作成
